@@ -8,7 +8,9 @@ fn main() {
         .add_plugin(RapierDebugRenderPlugin::default())
         .add_startup_system(setup_graphics)
         .add_startup_system(setup_physics)
-        .add_system(print_ball_altitude)
+        // .add_system(print_ball_altitude)
+        .add_system(keyboard_input_system)
+        .add_system(spawn_a_ball)
         .run();
 }
 
@@ -18,6 +20,8 @@ fn setup_graphics(mut commands: Commands) {
 }
 
 fn setup_physics(mut commands: Commands) {
+    commands.spawn().insert(KbState::default());
+
     /* Create the ground. */
     commands
         .spawn()
@@ -40,29 +44,40 @@ fn setup_physics(mut commands: Commands) {
             None,
         ))
         .insert(Friction::coefficient(1.0));
-
-    /* Create the bouncing ball. */
-    commands
-        .spawn()
-        .insert(RigidBody::Dynamic)
-        .insert(Collider::ball(20.0))
-        .insert(Restitution::coefficient(1.3))
-        .insert(Friction::coefficient(1.0))
-        .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 400.0, 0.0)));
-
-    commands
-        .spawn()
-        .insert(RigidBody::Dynamic)
-        .insert(Collider::ball(20.0))
-        .insert(Restitution::coefficient(1.3))
-        .insert(Friction::coefficient(1.0))
-        .insert_bundle(TransformBundle::from(Transform::from_xyz(
-            -10.0, 200.0, 0.0,
-        )));
 }
 
-fn print_ball_altitude(positions: Query<&Transform, With<RigidBody>>) {
-    for transform in positions.iter() {
-        println!("Ball altitude: {}", transform.translation.y);
+fn spawn_a_ball(mut commands: Commands, mut query: Query<&mut KbState>) {
+    let mut kb = query.single_mut();
+
+    if kb.spawn_ball && kb.count == 0 {
+        commands
+            .spawn()
+            .insert(RigidBody::Dynamic)
+            .insert(Collider::ball(20.0))
+            .insert(Restitution::coefficient(1.3))
+            .insert(Friction::coefficient(1.0))
+            .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 400.0, 0.0)));
+
+        kb.count = kb.count + 1;
     }
+}
+
+fn keyboard_input_system(keyboard_input: Res<Input<KeyCode>>, mut query: Query<&mut KbState>) {
+    let mut kb = query.single_mut();
+
+    if keyboard_input.pressed(KeyCode::Space) && !kb.spawn_ball {
+        kb.spawn_ball = true;
+        info!("Spawn a ball");
+    }
+
+    if !keyboard_input.pressed(KeyCode::Space) && kb.spawn_ball {
+        kb.spawn_ball = false;
+        kb.count = 0;
+        info!("Press space to spawn next ball");
+    }
+}
+#[derive(Component, Default)]
+struct KbState {
+    pub spawn_ball: bool,
+    pub count: i8,
 }
