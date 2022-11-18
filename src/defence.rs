@@ -84,7 +84,8 @@ pub fn defence_system_create_collider(
         commands
             .spawn()
             .insert(RigidBody::Dynamic)
-            .insert(Collider::polyline(def.points.clone(), None))
+            // .insert(Collider::polyline(def.points.clone(), None))
+            .insert(Collider::convex_hull(&def.points).unwrap())
             .insert(Restitution::coefficient(0.9))
             .insert(Friction::coefficient(1.0))
             .insert(GravityScale(1.0))
