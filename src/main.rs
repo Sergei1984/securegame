@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy::sprite::*;
 use bevy_rapier2d::prelude::*;
+use defence::defence_startup_system;
+mod defence;
 
 fn main() {
     App::new()
@@ -8,8 +10,8 @@ fn main() {
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
         .add_plugin(RapierDebugRenderPlugin::default())
         .add_startup_system(setup_graphics)
+        .add_startup_system(defence_startup_system)
         .add_startup_system(setup_physics)
-        // .add_system(print_ball_altitude)
         .add_system(keyboard_input_system)
         .add_system(spawn_a_ball)
         .run();
@@ -27,40 +29,6 @@ fn setup_graphics(
         mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
         transform: Transform::default().with_scale(Vec3::splat(12800.)),
         material: materials.add(ColorMaterial::from(Color::WHITE)),
-        ..default()
-    });
-
-    let mut mesh = Mesh::new(bevy::render::render_resource::PrimitiveTopology::LineList);
-
-    mesh.insert_attribute(
-        Mesh::ATTRIBUTE_POSITION,
-        vec![
-            [-500.0, 110.0, 0.0],
-            [100.0, 10.0, 0.0],
-            [100.0, 10.0, 0.0],
-            [500.0, 110.0, 0.0],
-        ],
-    );
-
-    mesh.insert_attribute(
-        Mesh::ATTRIBUTE_NORMAL,
-        vec![
-            [0.0, 0.0, 1.0],
-            [0.0, 0.0, 1.0],
-            [0.0, 0.0, 1.0],
-            [0.0, 0.0, 1.0],
-        ],
-    );
-
-    mesh.insert_attribute(
-        Mesh::ATTRIBUTE_UV_0,
-        vec![[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-    );
-
-    commands.spawn_bundle(MaterialMesh2dBundle {
-        mesh: meshes.add(mesh).into(),
-        transform: Transform::default().with_scale(Vec3::splat(1.)),
-        material: materials.add(ColorMaterial::from(Color::BLACK)),
         ..default()
     });
 }
