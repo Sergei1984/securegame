@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::sprite::*;
 use bevy_rapier2d::prelude::*;
 use common::MainCamera;
-use defence::{defence_startup_system, defence_system};
+use defence::*;
 
 mod common;
 mod defence;
@@ -14,10 +14,11 @@ fn main() {
         .add_plugin(RapierDebugRenderPlugin::default())
         .add_startup_system(setup_camera)
         .add_startup_system(setup_graphics)
-        .add_startup_system(defence_startup_system)
+        .add_startup_system(defence_system_startup)
         .add_startup_system(setup_physics)
         .add_system(spawn_a_ball)
-        .add_system(defence_system)
+        .add_system(defence_system_draw_defence_mesh)
+        .add_system(defence_system_create_collider)
         .run();
 }
 
