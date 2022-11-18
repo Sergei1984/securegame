@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use bevy::sprite::*;
 use bevy_rapier2d::prelude::*;
-use defence::defence_startup_system;
+use defence::{defence_startup_system, defence_system};
+
 mod defence;
 
 fn main() {
@@ -14,6 +15,7 @@ fn main() {
         .add_startup_system(setup_physics)
         .add_system(keyboard_input_system)
         .add_system(spawn_a_ball)
+        .add_system(defence_system)
         .run();
 }
 
