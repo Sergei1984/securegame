@@ -41,14 +41,14 @@ pub fn defence_system_draw_defence_mesh(
     mouse_button: Res<Input<MouseButton>>,
     mut cursor_moved_events: EventReader<CursorMoved>,
     mut query: Query<&mut Defence>,
-    mut meshes: ResMut<Assets<Mesh>>,
+    meshes: ResMut<Assets<Mesh>>,
     wnds: Res<Windows>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
 ) {
     let mut def = query.single_mut();
 
     if cursor_moved_events.iter().last().is_some() {
-        let position = get_cursor_pos(wnds, q_camera);
+        let position = get_cursor_pos(&wnds, &q_camera);
 
         if mouse_button.just_pressed(MouseButton::Left) && !def.adding_new_end {
             def.points.push(position.clone());
@@ -75,7 +75,7 @@ pub fn defence_system_create_collider(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<&mut Defence>,
-    mut meshes: ResMut<Assets<Mesh>>,
+    meshes: ResMut<Assets<Mesh>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Return) {
         info!("Return pressed, creating collider");
@@ -83,8 +83,9 @@ pub fn defence_system_create_collider(
 
         commands
             .spawn()
-            // .insert(Collider::cuboid(1000.0, 50.0))
+            .insert(RigidBody::Dynamic)
             .insert(Collider::polyline(def.points.clone(), None))
+            .insert(Restitution::coefficient(0.9))
             .insert(Friction::coefficient(1.0))
             .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 
