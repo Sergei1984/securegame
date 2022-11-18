@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
-use bevy_rapier2d::prelude::*;
+use bevy_rapier2d::{prelude::*, rapier::prelude::RigidBodyMassProps};
 
 use crate::common::{get_cursor_pos, MainCamera};
 
@@ -87,6 +87,10 @@ pub fn defence_system_create_collider(
             .insert(Collider::polyline(def.points.clone(), None))
             .insert(Restitution::coefficient(0.9))
             .insert(Friction::coefficient(1.0))
+            .insert(GravityScale(1.0))
+            .insert(Sleeping::disabled())
+            .insert(Ccd::enabled())
+            .insert(AdditionalMassProperties::Mass(200.0))
             .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 
         def.points.clear();
