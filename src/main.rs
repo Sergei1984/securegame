@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 use bevy::sprite::*;
 use bevy_rapier2d::prelude::*;
+use common::MainCamera;
 use defence::{defence_startup_system, defence_system};
 
+mod common;
 mod defence;
 
 fn main() {
@@ -10,13 +12,21 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
         .add_plugin(RapierDebugRenderPlugin::default())
+        .add_startup_system(setup_camera)
         .add_startup_system(setup_graphics)
         .add_startup_system(defence_startup_system)
         .add_startup_system(setup_physics)
-        .add_system(keyboard_input_system)
         .add_system(spawn_a_ball)
         .add_system(defence_system)
         .run();
+}
+
+fn setup_camera(mut commands: Commands) {
+    // Add a camera so we can see the debug-render.
+    commands
+        .spawn()
+        .insert_bundle(Camera2dBundle::default())
+        .insert(MainCamera);
 }
 
 fn setup_graphics(
@@ -24,9 +34,6 @@ fn setup_graphics(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    // Add a camera so we can see the debug-render.
-    commands.spawn_bundle(Camera2dBundle::default());
-
     commands.spawn_bundle(MaterialMesh2dBundle {
         mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
         transform: Transform::default().with_scale(Vec3::splat(12800.)),
@@ -36,8 +43,6 @@ fn setup_graphics(
 }
 
 fn setup_physics(mut commands: Commands) {
-    commands.spawn().insert(KbState::default());
-
     /* Create the ground. */
     commands
         .spawn()
@@ -62,10 +67,8 @@ fn setup_physics(mut commands: Commands) {
         .insert(Friction::coefficient(1.0));
 }
 
-fn spawn_a_ball(mut commands: Commands, mut query: Query<&mut KbState>) {
-    let mut kb = query.single_mut();
-
-    if kb.spawn_ball && kb.count == 0 {
+fn spawn_a_ball(mut commands: Commands, keyboard_input: Res<Input<KeyCode>>) {
+    if keyboard_input.just_pressed(KeyCode::Space) {
         commands
             .spawn()
             .insert(RigidBody::Dynamic)
@@ -73,27 +76,5 @@ fn spawn_a_ball(mut commands: Commands, mut query: Query<&mut KbState>) {
             .insert(Restitution::coefficient(1.3))
             .insert(Friction::coefficient(1.0))
             .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 400.0, 0.0)));
-
-        kb.count = kb.count + 1;
     }
-}
-
-fn keyboard_input_system(keyboard_input: Res<Input<KeyCode>>, mut query: Query<&mut KbState>) {
-    let mut kb = query.single_mut();
-
-    if keyboard_input.pressed(KeyCode::Space) && !kb.spawn_ball {
-        kb.spawn_ball = true;
-        info!("Spawn a ball");
-    }
-
-    if !keyboard_input.pressed(KeyCode::Space) && kb.spawn_ball {
-        kb.spawn_ball = false;
-        kb.count = 0;
-        info!("Press space to spawn next ball");
-    }
-}
-#[derive(Component, Default)]
-struct KbState {
-    pub spawn_ball: bool,
-    pub count: i8,
 }

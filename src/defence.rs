@@ -2,6 +2,8 @@ use bevy::prelude::*;
 use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
 
+use crate::common::{get_cursor_pos, MainCamera};
+
 pub fn defence_startup_system(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -39,16 +41,22 @@ pub fn defence_system(
     mut cursor_moved_events: EventReader<CursorMoved>,
     mut query: Query<&mut Defence>,
     mut meshes: ResMut<Assets<Mesh>>,
+    // need to get window dimensions
+    wnds: Res<Windows>,
+    // query to get camera transform
+    q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
 ) {
     let mut def = query.single_mut();
 
-    if let Some(pos) = cursor_moved_events.iter().last() {
-        if mouse_button.just_pressed(MouseButton::Left) && !def.adding_new_end {
-            info!("MLB Pressed at {:?}", pos);
+    if cursor_moved_events.iter().last().is_some() {
+        let position = get_cursor_pos(wnds, q_camera);
 
-            def.points.push(pos.position.clone());
+        if mouse_button.just_pressed(MouseButton::Left) && !def.adding_new_end {
+            info!("MLB Pressed at {:?}", position);
+
+            def.points.push(position.clone());
             if def.points.len() == 1 {
-                def.points.push(pos.position.clone());
+                def.points.push(position.clone());
             }
 
             def.adding_new_end = true;
@@ -60,11 +68,13 @@ pub fn defence_system(
             def.adding_new_end = false;
         }
 
+        info!("Mouse Coors: {:?}", position);
+
         if def.adding_new_end {
             let last_index = def.points.len() - 1;
-            def.points[last_index] = pos.position.clone();
+            def.points[last_index] = position.clone();
 
-            info!("Defence segment end at {:?}", pos.position);
+            info!("Defence segment end at {:?}", position);
 
             if def.points.len() > 1 {
                 if let Some(mesh) = meshes.get_mut(&def.mesh_handle) {
