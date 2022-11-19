@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
-use bevy_rapier2d::{prelude::*, rapier::prelude::RigidBodyMassProps};
+use bevy_rapier2d::prelude::*;
 
 use crate::{
     common::{get_cursor_pos, MainCamera},
