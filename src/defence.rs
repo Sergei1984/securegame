@@ -1,6 +1,6 @@
-use bevy::prelude::*;
 use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
+use bevy::{ecs::system::EntityCommands, prelude::*};
 use bevy_rapier2d::prelude::*;
 
 use crate::common::{get_cursor_pos, MainCamera};
@@ -88,10 +88,12 @@ pub fn create_collider(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     mut defence_query: Query<&mut Defence>,
+    mut entity_query: Query<Entity, With<Defence>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Return) {
         info!("Return pressed, creating collider");
         let mut def = defence_query.single_mut();
+        let mut entity = entity_query.single();
 
         if def.points.len() > 1 {
             let mut colliders: Vec<(Vec2, f32, Collider)> = vec![];
@@ -114,9 +116,8 @@ pub fn create_collider(
             }
 
             commands
-                .spawn()
+                .entity(entity)
                 .insert(RigidBody::Dynamic)
-                // .insert(Collider::polyline(def.points.clone(), None))
                 .insert(Collider::compound(colliders))
                 .insert(ContactForceEventThreshold(0.1))
                 .insert(Restitution::coefficient(0.9))
