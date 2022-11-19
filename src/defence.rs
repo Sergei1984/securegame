@@ -81,20 +81,41 @@ pub fn defence_system_create_collider(
         info!("Return pressed, creating collider");
         let mut def = query.single_mut();
 
-        commands
-            .spawn()
-            .insert(RigidBody::Dynamic)
-            // .insert(Collider::polyline(def.points.clone(), None))
-            .insert(Collider::convex_hull(&def.points).unwrap())
-            .insert(Restitution::coefficient(0.9))
-            .insert(Friction::coefficient(1.0))
-            .insert(GravityScale(1.0))
-            .insert(Sleeping::disabled())
-            .insert(Ccd::enabled())
-            .insert(AdditionalMassProperties::Mass(200.0))
-            .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
+        if def.points.len() > 1 {
+            let mut colliders: Vec<(Vec2, f32, Collider)> = vec![];
 
-        def.points.clear();
+            let mut prev_point = def.points.iter().next().unwrap();
+
+            for point in def.points.iter().skip(1) {
+                let v = Vec2::new(point.x - prev_point.x, point.y - prev_point.y);
+                let midpoint = Vec2::new(
+                    (prev_point.x + point.x) / 2.0,
+                    (prev_point.y + point.y) / 2.0,
+                );
+
+                let angle = -v.angle_between(Vec2::new(1.0, 0.0));
+                let width = v.length();
+                let collider = Collider::cuboid(width / 2.0, 1.0);
+                colliders.push((midpoint, angle, collider));
+
+                prev_point = point;
+            }
+
+            commands
+                .spawn()
+                .insert(RigidBody::Dynamic)
+                // .insert(Collider::polyline(def.points.clone(), None))
+                .insert(Collider::compound(colliders))
+                .insert(Restitution::coefficient(0.9))
+                .insert(Friction::coefficient(1.0))
+                .insert(GravityScale(1.0))
+                .insert(Sleeping::disabled())
+                .insert(Ccd::enabled())
+                .insert(AdditionalMassProperties::Mass(200.0))
+                .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
+
+            def.points.clear();
+        }
 
         defence_to_mesh(def, meshes);
     }
