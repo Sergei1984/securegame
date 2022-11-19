@@ -107,7 +107,7 @@ pub fn create_collider(
 
                 let angle = -v.angle_between(Vec2::new(1.0, 0.0));
                 let width = v.length();
-                let collider = Collider::cuboid(width / 2.0, 1.0);
+                let collider = Collider::cuboid(width / 2.0, 3.0);
                 colliders.push((midpoint, angle, collider));
 
                 prev_point = point;
@@ -118,13 +118,14 @@ pub fn create_collider(
                 .insert(RigidBody::Dynamic)
                 // .insert(Collider::polyline(def.points.clone(), None))
                 .insert(Collider::compound(colliders))
+                .insert(ContactForceEventThreshold(0.1))
                 .insert(Restitution::coefficient(0.9))
                 .insert(Friction::coefficient(0.3))
                 .insert(GravityScale(1.0))
                 .insert(Sleeping::disabled())
                 .insert(Ccd::enabled())
                 .insert(AdditionalMassProperties::Mass(10.0))
-                .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
+                .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 10.0)));
 
             def.points.clear();
         }

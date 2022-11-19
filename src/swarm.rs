@@ -41,7 +41,7 @@ fn spawn_wasps(
             let translation = Vec3::new(
                 hive.position.x + rand_range(-10.0, 10.0),
                 hive.position.y + rand_range(-10.0, 10.0),
-                20.0,
+                10.0,
             );
 
             let transform = Transform::from_xyz(translation.x, translation.y, translation.z);
@@ -54,7 +54,7 @@ fn spawn_wasps(
                 .insert_bundle(TransformBundle::from(transform))
                 .insert(Collider::ball(5.0))
                 .insert(Restitution::coefficient(0.95))
-                .insert(AdditionalMassProperties::Mass(200.0))
+                .insert(AdditionalMassProperties::Mass(10.0))
                 .insert_bundle(MaterialMesh2dBundle {
                     mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),
                     transform: Transform::default().with_translation(translation),
