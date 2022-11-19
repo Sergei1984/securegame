@@ -23,6 +23,7 @@ fn main() {
         .add_startup_system(swarm_system_startup)
         .add_system_set(swarm_system())
         .add_system_set(defence_system())
+        .add_system_set(target_system())
         .add_system(scene_system_create_bounding_box)
         .add_system(spawn_a_ball)
         .run();

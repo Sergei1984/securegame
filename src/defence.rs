@@ -3,10 +3,7 @@ use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::{
-    common::{get_cursor_pos, MainCamera},
-    target::Target,
-};
+use crate::common::{get_cursor_pos, MainCamera};
 
 #[derive(Component, Default, Debug)]
 pub struct Defence {
@@ -91,7 +88,6 @@ pub fn create_collider(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     mut defence_query: Query<&mut Defence>,
-    mut target_query: Query<&mut LockedAxes, With<Target>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Return) {
         info!("Return pressed, creating collider");
@@ -131,10 +127,6 @@ pub fn create_collider(
                 .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 
             def.points.clear();
-
-            if let Some(mut target) = target_query.iter_mut().next() {
-                target.set(LockedAxes::TRANSLATION_LOCKED, false);
-            }
         }
     }
 }
