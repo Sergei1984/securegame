@@ -2,11 +2,14 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use defence::*;
 use scene::*;
+use swarm::*;
 use target::*;
 
 mod common;
 mod defence;
+mod random;
 mod scene;
+mod swarm;
 mod target;
 
 fn main() {
@@ -17,6 +20,8 @@ fn main() {
         .add_startup_system(defence_system_startup)
         .add_startup_system(scene_system_startup)
         .add_startup_system(target_system_startup)
+        .add_startup_system(swarm_system_startup)
+        .add_system_set(swarm_system())
         .add_system(scene_system_create_bounding_box)
         .add_system(spawn_a_ball)
         .add_system(defence_system_draw_defence_mesh)
