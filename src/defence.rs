@@ -3,7 +3,10 @@ use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::RigidBodyMassProps};
 
-use crate::common::{get_cursor_pos, MainCamera};
+use crate::{
+    common::{get_cursor_pos, MainCamera},
+    target::Target,
+};
 
 pub fn defence_system_startup(
     mut commands: Commands,
@@ -74,12 +77,13 @@ pub fn defence_system_draw_defence_mesh(
 pub fn defence_system_create_collider(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<&mut Defence>,
+    mut defence_query: Query<&mut Defence>,
+    mut target_query: Query<&mut LockedAxes, With<Target>>,
     meshes: ResMut<Assets<Mesh>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Return) {
         info!("Return pressed, creating collider");
-        let mut def = query.single_mut();
+        let mut def = defence_query.single_mut();
 
         if def.points.len() > 1 {
             let mut colliders: Vec<(Vec2, f32, Collider)> = vec![];
@@ -107,7 +111,7 @@ pub fn defence_system_create_collider(
                 // .insert(Collider::polyline(def.points.clone(), None))
                 .insert(Collider::compound(colliders))
                 .insert(Restitution::coefficient(0.9))
-                .insert(Friction::coefficient(1.0))
+                .insert(Friction::coefficient(0.3))
                 .insert(GravityScale(1.0))
                 .insert(Sleeping::disabled())
                 .insert(Ccd::enabled())
@@ -115,6 +119,10 @@ pub fn defence_system_create_collider(
                 .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 
             def.points.clear();
+
+            if let Some(mut target) = target_query.iter_mut().next() {
+                target.set(LockedAxes::TRANSLATION_LOCKED, false);
+            }
         }
 
         defence_to_mesh(def, meshes);

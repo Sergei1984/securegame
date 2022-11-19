@@ -28,7 +28,7 @@ pub fn scene_system_startup(
 
 pub fn scene_system_create_bounding_box(
     mut commands: Commands,
-    wnds: Res<Windows>,
+    mut wnds: ResMut<Windows>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
     mut query: Query<&mut BoundingBox>,
 ) {
@@ -38,14 +38,18 @@ pub fn scene_system_create_bounding_box(
 
     let mut bb = query.single_mut();
 
-    let win = wnds.get_primary().unwrap();
+    let win = wnds.get_primary_mut().unwrap();
     let (camera, camera_transform) = q_camera.single();
+
+    win.set_resizable(false);
 
     if !bb.is_init {
         bb.is_init = true;
         // Create bounding collider
         commands
             .spawn()
+            .insert(RigidBody::Fixed)
+            .insert(AdditionalMassProperties::Mass(100_000.0))
             .insert(Collider::polyline(
                 vec![
                     get_world_coord_from_screen(
@@ -76,10 +80,17 @@ pub fn scene_system_create_bounding_box(
                         camera,
                         camera_transform,
                     ),
+                    get_world_coord_from_screen(
+                        Vec2::new(1.0, 1.0),
+                        win.width(),
+                        win.height(),
+                        camera,
+                        camera_transform,
+                    ),
                 ],
                 None,
             ))
-            .insert(Friction::coefficient(1.0))
+            .insert(Friction::coefficient(1000.0))
             .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, -0.0, 0.0)));
     }
 }
