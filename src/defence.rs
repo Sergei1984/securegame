@@ -111,7 +111,7 @@ pub fn defence_system_create_collider(
                 .insert(GravityScale(1.0))
                 .insert(Sleeping::disabled())
                 .insert(Ccd::enabled())
-                .insert(AdditionalMassProperties::Mass(200.0))
+                .insert(AdditionalMassProperties::Mass(10.0))
                 .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 
             def.points.clear();
