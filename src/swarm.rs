@@ -53,8 +53,9 @@ fn spawn_wasps(
                 .insert(RigidBody::Dynamic)
                 .insert_bundle(TransformBundle::from(transform))
                 .insert(Collider::ball(5.0))
+                .insert(Friction::coefficient(2.0))
                 .insert(Restitution::coefficient(0.95))
-                .insert(AdditionalMassProperties::Mass(10.0))
+                .insert(AdditionalMassProperties::Mass(50.0))
                 .insert_bundle(MaterialMesh2dBundle {
                     mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),
                     transform: Transform::default().with_translation(translation),

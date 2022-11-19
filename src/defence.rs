@@ -120,10 +120,7 @@ pub fn create_collider(
                 .insert(Collider::compound(colliders))
                 .insert(ContactForceEventThreshold(0.1))
                 .insert(Restitution::coefficient(0.9))
-                .insert(Friction::coefficient(0.3))
-                .insert(GravityScale(1.0))
-                .insert(Sleeping::disabled())
-                .insert(Ccd::enabled())
+                .insert(Friction::coefficient(3.0))
                 .insert(AdditionalMassProperties::Mass(10.0))
                 .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 10.0)));
 
