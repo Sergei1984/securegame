@@ -20,6 +20,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
         .add_plugin(RapierDebugRenderPlugin::default())
+        .add_system(bevy::window::close_on_esc)
         .add_startup_system(defence_system_startup)
         .add_startup_system(scene_system_startup)
         .add_startup_system(target_system_startup)
