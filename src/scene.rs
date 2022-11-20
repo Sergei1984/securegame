@@ -50,6 +50,7 @@ pub fn scene_system_create_bounding_box(
             .spawn()
             .insert(RigidBody::Fixed)
             .insert(AdditionalMassProperties::Mass(100_000.0))
+            .insert(Restitution::coefficient(0.99))
             .insert(Collider::polyline(
                 vec![
                     get_world_coord_from_screen(

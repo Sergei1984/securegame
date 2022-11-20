@@ -45,21 +45,20 @@ fn spawn_wasps(
                 10.0,
             );
 
-            let velocity = Vec2::new(rand_range(-3.0, 3.0), rand_range(-3.0, 3.0)) * 50.0;
-
             let transform = Transform::from_xyz(translation.x, translation.y, translation.z);
             commands
                 .spawn()
                 .insert(Wasp {
-                    tick: Timer::from_seconds(0.1 + rand::random::<f32>(), true),
+                    timer: Timer::from_seconds(0.1 + rand_range(0.0, 0.9), true),
                 })
-                .insert(RigidBody::KinematicVelocityBased)
-                .insert(Velocity::linear(velocity))
+                .insert(RigidBody::Dynamic)
+                .insert(ExternalImpulse::default())
                 .insert_bundle(TransformBundle::from(transform))
                 .insert(Collider::ball(5.0))
                 .insert(Friction::coefficient(2.0))
                 .insert(Restitution::coefficient(0.95))
                 .insert(AdditionalMassProperties::Mass(50.0))
+                .insert(GravityScale(0.0))
                 .insert_bundle(MaterialMesh2dBundle {
                     mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),
                     transform: Transform::default().with_translation(translation),
@@ -71,19 +70,22 @@ fn spawn_wasps(
 }
 
 fn direct_wasps(
-    mut wasps_query: Query<(&Transform, &mut Velocity), With<Wasp>>,
+    time: Res<Time>,
+    mut wasps_query: Query<(&mut Wasp, &Transform, &mut ExternalImpulse), With<Wasp>>,
     transform_query: Query<&Transform, With<Target>>,
 ) {
     let target_transform = transform_query.single();
 
-    for (mut wasp_transform, mut velocity) in wasps_query.iter_mut() {
-        let vel = Vec2::new(
-            target_transform.translation.x - wasp_transform.translation.x,
-            target_transform.translation.y - wasp_transform.translation.y,
-        )
-        .normalize();
+    for (mut wasp, wasp_transform, mut external_impulse) in wasps_query.iter_mut() {
+        if wasp.timer.tick(time.delta()).just_finished() {
+            let impulse = Vec2::new(
+                target_transform.translation.x - wasp_transform.translation.x,
+                target_transform.translation.y - wasp_transform.translation.y,
+            )
+            .normalize();
 
-        velocity.linvel = vel * 50.0;
+            external_impulse.impulse = impulse * 3000.0;
+        }
     }
 }
 
@@ -94,5 +96,5 @@ pub struct Hive {
 
 #[derive(Component, Debug)]
 pub struct Wasp {
-    pub tick: Timer,
+    pub timer: Timer,
 }
