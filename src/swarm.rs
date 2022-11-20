@@ -1,9 +1,11 @@
-use crate::{game_events::SpawnSwarmEvent, random::*};
+use crate::{game_events::SpawnSwarmEvent, random::*, target::Target};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use bevy_rapier2d::prelude::*;
 
 pub fn swarm_system() -> SystemSet {
-    SystemSet::new().with_system(spawn_wasps)
+    SystemSet::new()
+        .with_system(spawn_wasps)
+        .with_system(direct_wasps)
 }
 
 pub fn swarm_system_startup(
@@ -43,13 +45,16 @@ fn spawn_wasps(
                 10.0,
             );
 
+            let velocity = Vec2::new(rand_range(-3.0, 3.0), rand_range(-3.0, 3.0)) * 50.0;
+
             let transform = Transform::from_xyz(translation.x, translation.y, translation.z);
             commands
                 .spawn()
                 .insert(Wasp {
                     tick: Timer::from_seconds(0.1 + rand::random::<f32>(), true),
                 })
-                .insert(RigidBody::Dynamic)
+                .insert(RigidBody::KinematicVelocityBased)
+                .insert(Velocity::linear(velocity))
                 .insert_bundle(TransformBundle::from(transform))
                 .insert(Collider::ball(5.0))
                 .insert(Friction::coefficient(2.0))
@@ -62,6 +67,23 @@ fn spawn_wasps(
                     ..default()
                 });
         }
+    }
+}
+
+fn direct_wasps(
+    mut wasps_query: Query<(&Transform, &mut Velocity), With<Wasp>>,
+    transform_query: Query<&Transform, With<Target>>,
+) {
+    let target_transform = transform_query.single();
+
+    for (mut wasp_transform, mut velocity) in wasps_query.iter_mut() {
+        let vel = Vec2::new(
+            target_transform.translation.x - wasp_transform.translation.x,
+            target_transform.translation.y - wasp_transform.translation.y,
+        )
+        .normalize();
+
+        velocity.linvel = vel * 50.0;
     }
 }
 

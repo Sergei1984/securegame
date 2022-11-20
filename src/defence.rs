@@ -96,7 +96,7 @@ pub fn create_collider(
     if spawn_swarm_events.iter().next().is_some() {
         info!("Return pressed, creating collider");
         let mut def = defence_query.single_mut();
-        let mut entity = entity_query.single();
+        let entity = entity_query.single();
 
         if def.points.len() > 1 {
             let mut colliders: Vec<(Vec2, f32, Collider)> = vec![];
