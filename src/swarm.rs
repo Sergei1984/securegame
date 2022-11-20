@@ -1,7 +1,6 @@
-use crate::random::*;
+use crate::{game_events::SpawnSwarmEvent, random::*};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use bevy_rapier2d::prelude::*;
-use rand::prelude::*;
 
 pub fn swarm_system() -> SystemSet {
     SystemSet::new().with_system(spawn_wasps)
@@ -29,12 +28,12 @@ fn spawn_wasps(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    mut spawn_swarm_events: EventReader<SpawnSwarmEvent>,
     hive_query: Query<&Hive>,
 ) {
     let hive = hive_query.single();
 
-    if keyboard_input.just_pressed(KeyCode::Return) {
+    if spawn_swarm_events.iter().next().is_some() {
         info!("Spawning wasps");
 
         for _ in 0..10 {

@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::game_events::SpawnSwarmEvent;
+
 pub fn target_system_startup(mut commands: Commands) {
     commands
         .spawn()
@@ -20,9 +22,9 @@ pub fn target_system() -> SystemSet {
 
 fn unlock_target(
     mut target_query: Query<&mut LockedAxes, With<Target>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    mut spawn_swarm_events: EventReader<SpawnSwarmEvent>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::Return) {
+    if spawn_swarm_events.iter().next().is_some() {
         if let Some(mut target) = target_query.iter_mut().next() {
             target.set(LockedAxes::TRANSLATION_LOCKED, false);
         }

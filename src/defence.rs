@@ -1,9 +1,12 @@
+use bevy::prelude::*;
 use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
-use bevy::{ecs::system::EntityCommands, prelude::*};
 use bevy_rapier2d::prelude::*;
 
-use crate::common::{get_cursor_pos, MainCamera};
+use crate::{
+    common::{get_cursor_pos, MainCamera},
+    game_events::SpawnSwarmEvent,
+};
 
 #[derive(Component, Default, Debug)]
 pub struct Defence {
@@ -86,11 +89,11 @@ pub fn draw_defence(
 
 pub fn create_collider(
     mut commands: Commands,
-    keyboard_input: Res<Input<KeyCode>>,
     mut defence_query: Query<&mut Defence>,
-    mut entity_query: Query<Entity, With<Defence>>,
+    entity_query: Query<Entity, With<Defence>>,
+    mut spawn_swarm_events: EventReader<SpawnSwarmEvent>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::Return) {
+    if spawn_swarm_events.iter().next().is_some() {
         info!("Return pressed, creating collider");
         let mut def = defence_query.single_mut();
         let mut entity = entity_query.single();
