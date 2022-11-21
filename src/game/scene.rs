@@ -5,7 +5,7 @@ use bevy_rapier2d::prelude::*;
 use crate::common::get_world_coord_from_screen;
 use crate::common::MainCamera;
 
-pub fn scene_system_startup(
+pub fn init_scene(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,

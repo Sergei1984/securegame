@@ -12,7 +12,7 @@ pub struct Defence {
     pub adding_new_end: bool,
 }
 
-pub fn defence_system_startup(
+pub fn init_defence_drawing(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
