@@ -3,10 +3,7 @@ use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::{
-    common::{get_cursor_pos, MainCamera},
-    game_events::SpawnSwarmEvent,
-};
+use crate::common::{get_cursor_pos, MainCamera};
 
 #[derive(Component, Default, Debug)]
 pub struct Defence {
@@ -48,14 +45,7 @@ pub fn defence_system_startup(
         .insert(def);
 }
 
-pub fn defence_system() -> SystemSet {
-    SystemSet::new()
-        .with_system(draw_defence)
-        .with_system(create_collider)
-        .with_system(update_defence_mesh)
-}
-
-pub fn draw_defence(
+pub fn draw_defence_core(
     mouse_button: Res<Input<MouseButton>>,
     mut cursor_moved_events: EventReader<CursorMoved>,
     mut query: Query<&mut Defence>,
@@ -87,53 +77,50 @@ pub fn draw_defence(
     }
 }
 
-pub fn create_collider(
+pub fn create_defence_collider(
     mut commands: Commands,
     mut defence_query: Query<&mut Defence>,
     entity_query: Query<Entity, With<Defence>>,
-    mut spawn_swarm_events: EventReader<SpawnSwarmEvent>,
 ) {
-    if spawn_swarm_events.iter().next().is_some() {
-        info!("Return pressed, creating collider");
-        let mut def = defence_query.single_mut();
-        let entity = entity_query.single();
+    info!("Return pressed, creating collider");
+    let mut def = defence_query.single_mut();
+    let entity = entity_query.single();
 
-        if def.points.len() > 1 {
-            let mut colliders: Vec<(Vec2, f32, Collider)> = vec![];
+    if def.points.len() > 1 {
+        let mut colliders: Vec<(Vec2, f32, Collider)> = vec![];
 
-            let mut prev_point = def.points.iter().next().unwrap();
+        let mut prev_point = def.points.iter().next().unwrap();
 
-            for point in def.points.iter().skip(1) {
-                let v = Vec2::new(point.x - prev_point.x, point.y - prev_point.y);
-                let midpoint = Vec2::new(
-                    (prev_point.x + point.x) / 2.0,
-                    (prev_point.y + point.y) / 2.0,
-                );
+        for point in def.points.iter().skip(1) {
+            let v = Vec2::new(point.x - prev_point.x, point.y - prev_point.y);
+            let midpoint = Vec2::new(
+                (prev_point.x + point.x) / 2.0,
+                (prev_point.y + point.y) / 2.0,
+            );
 
-                let angle = -v.angle_between(Vec2::new(1.0, 0.0));
-                let width = v.length();
-                let collider = Collider::cuboid(width / 2.0, 3.0);
-                colliders.push((midpoint, angle, collider));
+            let angle = -v.angle_between(Vec2::new(1.0, 0.0));
+            let width = v.length();
+            let collider = Collider::cuboid(width / 2.0, 3.0);
+            colliders.push((midpoint, angle, collider));
 
-                prev_point = point;
-            }
-
-            commands
-                .entity(entity)
-                .insert(RigidBody::Dynamic)
-                .insert(Collider::compound(colliders))
-                .insert(ContactForceEventThreshold(0.1))
-                .insert(Restitution::coefficient(0.95))
-                .insert(Friction::coefficient(0.1))
-                .insert(AdditionalMassProperties::Mass(10.0))
-                .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 10.0)));
-
-            def.points.clear();
+            prev_point = point;
         }
+
+        commands
+            .entity(entity)
+            .insert(RigidBody::Dynamic)
+            .insert(Collider::compound(colliders))
+            .insert(ContactForceEventThreshold(0.1))
+            .insert(Restitution::coefficient(0.95))
+            .insert(Friction::coefficient(0.1))
+            .insert(AdditionalMassProperties::Mass(10.0))
+            .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 10.0)));
+
+        def.points.clear();
     }
 }
 
-fn update_defence_mesh(
+pub fn update_defence_mesh(
     defence_changed_query: Query<&Defence, Changed<Defence>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {

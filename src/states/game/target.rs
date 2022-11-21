@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::game_events::SpawnSwarmEvent;
+use crate::states::events::SpawnSwarmEvent;
 
 pub fn target_system_startup(mut commands: Commands) {
     commands
@@ -16,11 +16,7 @@ pub fn target_system_startup(mut commands: Commands) {
         .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, -200.0, 0.0)));
 }
 
-pub fn target_system() -> SystemSet {
-    SystemSet::new().with_system(unlock_target)
-}
-
-fn unlock_target(
+pub fn unlock_target(
     mut target_query: Query<&mut LockedAxes, With<Target>>,
     mut spawn_swarm_events: EventReader<SpawnSwarmEvent>,
 ) {
