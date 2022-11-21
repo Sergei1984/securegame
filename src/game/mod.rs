@@ -50,6 +50,7 @@ pub fn run_test_defence() -> SystemSet {
         .run_in_state(GameState::TestDefence)
         .with_system(direct_wasps)
         .with_system(unlock_target)
+        .with_system(detect_wasp_sting)
         .into()
 }
 

@@ -53,6 +53,7 @@ pub fn spawn_wasps(
             .insert(Restitution::coefficient(0.95))
             .insert(AdditionalMassProperties::Mass(50.0))
             .insert(GravityScale(0.0))
+            // .insert(ActiveEvents::COLLISION_EVENTS)
             .insert_bundle(MaterialMesh2dBundle {
                 mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),
                 transform: Transform::default().with_translation(translation),
