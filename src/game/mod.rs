@@ -14,13 +14,17 @@ mod target;
 
 pub fn startup() -> SystemSet {
     SystemSet::new()
-        // .with_system(controller)
-        .with_system(init_scene)
+        .with_system(init_camera)
         .with_system(init_target)
+}
+
+pub fn game_common() -> SystemSet {
+    SystemSet::new().with_system(controller)
 }
 
 pub fn enter_draw_defence() -> SystemSet {
     ConditionSet::new()
+        .with_system(init_scene)
         .with_system(create_hive)
         .with_system(init_defence_drawing)
         .into()

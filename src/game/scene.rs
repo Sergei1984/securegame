@@ -5,6 +5,13 @@ use bevy_rapier2d::prelude::*;
 use crate::common::get_world_coord_from_screen;
 use crate::common::MainCamera;
 
+pub fn init_camera(mut commands: Commands) {
+    commands
+        .spawn()
+        .insert_bundle(Camera2dBundle::default())
+        .insert(MainCamera);
+}
+
 pub fn init_scene(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -12,11 +19,6 @@ pub fn init_scene(
     mut wnds: ResMut<Windows>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
 ) {
-    commands
-        .spawn()
-        .insert_bundle(Camera2dBundle::default())
-        .insert(MainCamera);
-
     // Create background
     commands.spawn_bundle(MaterialMesh2dBundle {
         mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
@@ -26,6 +28,7 @@ pub fn init_scene(
     });
 
     if q_camera.is_empty() {
+        info!("Camera is empty");
         return;
     }
 
