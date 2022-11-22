@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::common::MainCamera;
+
 pub fn init_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn().insert(MainMenu);
     commands
@@ -51,6 +53,13 @@ pub fn init_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 },
             )]));
         });
+}
+
+pub fn cleanup_menu(mut commands: Commands, query: Query<Entity, Without<MainCamera>>) {
+    for entity in &mut query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    info!("Game cleaned");
 }
 
 #[derive(Component)]

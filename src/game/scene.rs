@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::sprite::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::common::get_world_coord_from_screen;
@@ -17,6 +16,8 @@ pub fn init_scene(
     mut wnds: ResMut<Windows>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
 ) {
+    info!("Init scene");
+
     if q_camera.is_empty() {
         info!("Camera is empty");
         return;

@@ -9,6 +9,8 @@ pub fn create_hive(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
+    info!("Create hive");
+
     commands
         .spawn()
         .insert(Hive {

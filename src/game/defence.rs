@@ -17,6 +17,8 @@ pub fn init_defence_drawing(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
+    info!("Init Defence drawing");
+
     let mut mesh = Mesh::new(bevy::render::render_resource::PrimitiveTopology::LineList);
 
     let empty3: Vec<[f32; 3]> = vec![];

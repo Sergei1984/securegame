@@ -1,5 +1,3 @@
-use crate::common::despawn_with;
-
 use self::controller::*;
 use self::defence::*;
 use self::main_menu::*;
@@ -29,7 +27,7 @@ pub fn enter_main_menu() -> SystemSet {
 }
 
 pub fn exit_main_menu() -> SystemSet {
-    SystemSet::new().with_system(despawn_with::<MainMenu>)
+    SystemSet::new().with_system(cleanup_menu)
 }
 
 pub fn enter_draw_defence() -> SystemSet {
@@ -70,6 +68,6 @@ pub enum GameState {
     MainMenu,
     DrawDefence,
     TestDefence,
-    Win,
-    Lose,
+    // Win,
+    // Lose,
 }
