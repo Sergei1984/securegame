@@ -55,6 +55,15 @@ pub fn enter_test_defence() -> SystemSet {
     ConditionSet::new()
         .with_system(create_defence_collider)
         .with_system(spawn_wasps)
+        .with_system(unlock_target)
+        .into()
+}
+
+pub fn run_test_defence() -> SystemSet {
+    ConditionSet::new()
+        .run_in_state(GameState::TestDefence)
+        .with_system(direct_wasps)
+        .with_system(detect_wasp_sting)
         .into()
 }
 
@@ -64,15 +73,6 @@ pub fn enter_win_lose() -> SystemSet {
 
 pub fn exit_win_lose() -> SystemSet {
     SystemSet::new().with_system(cleanup_game)
-}
-
-pub fn run_test_defence() -> SystemSet {
-    ConditionSet::new()
-        .run_in_state(GameState::TestDefence)
-        .with_system(direct_wasps)
-        .with_system(unlock_target)
-        .with_system(detect_wasp_sting)
-        .into()
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

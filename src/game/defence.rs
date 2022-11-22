@@ -102,7 +102,7 @@ pub fn create_defence_collider(
 
             let angle = -v.angle_between(Vec2::new(1.0, 0.0));
             let width = v.length();
-            let collider = Collider::cuboid(width / 2.0, 3.0);
+            let collider = Collider::cuboid(width / 2.0, 5.0);
             colliders.push((midpoint, angle, collider));
 
             prev_point = point;
@@ -112,7 +112,6 @@ pub fn create_defence_collider(
             .entity(entity)
             .insert(RigidBody::Dynamic)
             .insert(Collider::compound(colliders))
-            .insert(ContactForceEventThreshold(0.1))
             .insert(Restitution::coefficient(0.95))
             .insert(Friction::coefficient(0.1))
             .insert(AdditionalMassProperties::Mass(10.0))
