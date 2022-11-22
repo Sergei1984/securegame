@@ -14,19 +14,9 @@ pub fn init_camera(mut commands: Commands) {
 
 pub fn init_scene(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     mut wnds: ResMut<Windows>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
 ) {
-    // Create background
-    commands.spawn_bundle(MaterialMesh2dBundle {
-        mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
-        transform: Transform::default().with_scale(Vec3::splat(12800.)),
-        material: materials.add(ColorMaterial::from(Color::WHITE)),
-        ..default()
-    });
-
     if q_camera.is_empty() {
         info!("Camera is empty");
         return;

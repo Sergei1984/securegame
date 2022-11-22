@@ -1,43 +1,56 @@
-use bevy::{prelude::*, sprite::*};
+use bevy::prelude::*;
 
-pub fn init_main_menu(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+pub fn init_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn().insert(MainMenu);
     commands
-        .spawn()
-        .insert(MainMenu)
-        .insert_bundle(MaterialMesh2dBundle {
-            mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
-            transform: Transform::default().with_scale(Vec3::splat(12800.)),
-            material: materials.add(ColorMaterial::from(Color::WHITE)),
+        .spawn_bundle(NodeBundle {
+            style: Style {
+                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                display: Display::Flex,
+                flex_direction: FlexDirection::ColumnReverse,
+                ..default()
+            },
             ..default()
         })
-        .insert_bundle(
-            // Create a TextBundle that has a Text with a single section.
-            TextBundle::from_section(
-                // Accepts a `String` or any type that converts into a `String`, such as `&str`
-                "hello\nbevy!",
+        .with_children(|parent| {
+            parent.spawn_bundle(TextBundle::from_sections([TextSection::new(
+                "Defend the dog!!",
                 TextStyle {
                     font: asset_server.load("fonts/FiraMono-Medium.ttf"),
-                    font_size: 100.0,
+                    font_size: 50.0,
+                    color: Color::BLUE,
+                },
+            )]));
+
+            parent.spawn_bundle(TextBundle::from_sections([TextSection::new(
+                "Press SPACE to start game",
+                TextStyle {
+                    font: asset_server.load("fonts/FiraMono-Medium.ttf"),
+                    font_size: 20.0,
                     color: Color::BLACK,
                 },
-            ) // Set the alignment of the Text
-            .with_text_alignment(TextAlignment::TOP_CENTER)
-            // Set the style of the TextBundle itself.
-            .with_style(Style {
-                position_type: PositionType::Absolute,
-                position: UiRect {
-                    bottom: Val::Px(5.0),
-                    right: Val::Px(15.0),
-                    ..default()
+            )]));
+
+            parent.spawn_bundle(TextBundle::from_sections([TextSection::new(
+                "Draw defence around the Dog via mouse and press Enter to spawn the Wasp Swarm",
+                TextStyle {
+                    font: asset_server.load("fonts/FiraMono-Medium.ttf"),
+                    font_size: 20.0,
+                    color: Color::BLACK,
                 },
-                ..default()
-            }),
-        );
+            )]));
+
+            parent.spawn_bundle(TextBundle::from_sections([TextSection::new(
+                "Defence should stay for 20 seconds to win",
+                TextStyle {
+                    font: asset_server.load("fonts/FiraMono-Medium.ttf"),
+                    font_size: 20.0,
+                    color: Color::BLACK,
+                },
+            )]));
+        });
 }
 
 #[derive(Component)]
