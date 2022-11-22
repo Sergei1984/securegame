@@ -13,7 +13,6 @@ pub fn init_target(mut commands: Commands) {
         .insert(Friction::coefficient(1.0))
         .insert(AdditionalMassProperties::Mass(100.0))
         .insert(LockedAxes::TRANSLATION_LOCKED)
-        .insert(ActiveEvents::COLLISION_EVENTS)
         .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, -200.0, 0.0)));
 }
 
