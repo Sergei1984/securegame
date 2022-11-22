@@ -21,6 +21,18 @@ pub fn controller(
                 commands.insert_resource(NextState(GameState::TestDefence))
             }
         }
+        GameState::Win => {
+            if keyboard_input.just_pressed(KeyCode::Space) {
+                info!("SWITCH: TestDefence");
+                commands.insert_resource(NextState(GameState::MainMenu))
+            }
+        }
+        GameState::Lose => {
+            if keyboard_input.just_pressed(KeyCode::Space) {
+                info!("SWITCH: TestDefence");
+                commands.insert_resource(NextState(GameState::MainMenu))
+            }
+        }
         _ => {}
     }
 }
