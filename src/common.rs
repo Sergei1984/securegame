@@ -57,3 +57,10 @@ pub fn get_cursor_pos(
 
     return Vec2::new(0.0, 0.0);
 }
+
+/// Despawn all entities with a given component type
+pub fn despawn_with<T: Component>(mut commands: Commands, q: Query<Entity, With<T>>) {
+    for e in q.iter() {
+        commands.entity(e).despawn_recursive();
+    }
+}

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_rapier2d::{prelude::*, rapier::prelude::ColliderBuilder};
+use bevy_rapier2d::prelude::*;
 
 use super::swarm::Wasp;
 
@@ -23,7 +23,6 @@ pub fn unlock_target(mut target_query: Query<&mut LockedAxes, With<Target>>) {
 }
 
 pub fn detect_wasp_sting(
-    mut commands: Commands,
     rapier_context: Res<RapierContext>,
     wasp_query: Query<Entity, With<Wasp>>,
     target_query: Query<Entity, With<Target>>,

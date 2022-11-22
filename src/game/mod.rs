@@ -1,5 +1,8 @@
+use crate::common::despawn_with;
+
 use self::controller::*;
 use self::defence::*;
+use self::main_menu::*;
 use self::scene::*;
 use self::swarm::*;
 use self::target::*;
@@ -8,22 +11,30 @@ use iyes_loopless::prelude::*;
 
 mod controller;
 mod defence;
+mod main_menu;
 mod scene;
 mod swarm;
 mod target;
 
 pub fn startup() -> SystemSet {
-    SystemSet::new()
-        .with_system(init_camera)
-        .with_system(init_target)
+    SystemSet::new().with_system(init_camera)
 }
 
 pub fn game_common() -> SystemSet {
     SystemSet::new().with_system(controller)
 }
 
+pub fn enter_main_menu() -> SystemSet {
+    ConditionSet::new().with_system(init_main_menu).into()
+}
+
+pub fn exit_main_menu() -> SystemSet {
+    SystemSet::new().with_system(despawn_with::<MainMenu>)
+}
+
 pub fn enter_draw_defence() -> SystemSet {
     ConditionSet::new()
+        .with_system(init_target)
         .with_system(init_scene)
         .with_system(create_hive)
         .with_system(init_defence_drawing)
