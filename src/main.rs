@@ -13,7 +13,7 @@ mod random;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0))
         .add_plugin(RapierDebugRenderPlugin::default())
         //
         .insert_resource(ClearColor(Color::WHITE))
