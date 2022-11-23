@@ -14,7 +14,7 @@ fn main() {
     println!("cargo:warning=COPY RESULT is {:?}", r);
 
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=assets/fonts/FiraMono-Medium.ttf");
+    println!("cargo:rerun-if-changed=assets/*");
 }
 
 fn copy_recursive(from_dir: &PathBuf, to_dir: &PathBuf) -> std::io::Result<u64> {

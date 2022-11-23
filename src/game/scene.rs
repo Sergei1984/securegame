@@ -26,6 +26,8 @@ pub fn init_scene(
     let win = wnds.get_primary_mut().unwrap();
     let (camera, camera_transform) = q_camera.single();
 
+    info!("Window size {}x{}", win.width(), win.height());
+
     win.set_resizable(false);
 
     // Create bounding collider
