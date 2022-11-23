@@ -2,6 +2,7 @@ use crate::common::MainCamera;
 
 use self::controller::*;
 use self::defence::*;
+use self::level::*;
 use self::main_menu::*;
 use self::scene::*;
 use self::swarm::*;
@@ -12,6 +13,7 @@ use iyes_loopless::prelude::*;
 
 mod controller;
 mod defence;
+mod level;
 mod main_menu;
 mod scene;
 mod swarm;
@@ -19,7 +21,9 @@ mod target;
 mod win_lose;
 
 pub fn startup() -> SystemSet {
-    SystemSet::new().with_system(init_camera)
+    SystemSet::new()
+        .with_system(init_camera)
+        .with_system(init_level)
 }
 
 pub fn game_common() -> SystemSet {
@@ -40,6 +44,7 @@ pub fn enter_draw_defence() -> SystemSet {
         .with_system(init_scene)
         .with_system(create_hive)
         .with_system(init_defence_drawing)
+        .with_system(load_level)
         .into()
 }
 
@@ -84,7 +89,10 @@ pub enum GameState {
     Lose,
 }
 
-pub fn cleanup_game(mut commands: Commands, query: Query<Entity, Without<MainCamera>>) {
+pub fn cleanup_game(
+    mut commands: Commands,
+    query: Query<Entity, (Without<MainCamera>, Without<Level>)>,
+) {
     for entity in &mut query.iter() {
         commands.entity(entity).despawn_recursive();
     }
