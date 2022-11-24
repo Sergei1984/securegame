@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 pub fn init_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(MainMenu);
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -14,6 +13,7 @@ pub fn init_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
             },
             ..default()
         })
+        .insert(MainMenu)
         .with_children(|parent| {
             parent.spawn(TextBundle::from_sections([TextSection::new(
                 "Defend the dog!!",
@@ -51,6 +51,12 @@ pub fn init_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 },
             )]));
         });
+}
+
+pub fn cleanup_menu(mut commands: Commands, menu_query: Query<(Entity, &MainMenu)>) {
+    let (entity, _) = menu_query.single();
+
+    commands.entity(entity).despawn_recursive();
 }
 
 #[derive(Component)]

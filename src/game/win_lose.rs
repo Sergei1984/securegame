@@ -31,6 +31,7 @@ pub fn init_win_lose(
             },
             ..default()
         })
+        .insert(WinLose)
         .with_children(|parent| {
             parent.spawn(TextBundle::from_sections([TextSection::new(
                 text,
@@ -42,3 +43,12 @@ pub fn init_win_lose(
             )]));
         });
 }
+
+pub fn cleanup_winlose(mut commands: Commands, winlose_query: Query<(Entity, &WinLose)>) {
+    let (entity, _) = winlose_query.single();
+
+    commands.entity(entity).despawn_recursive();
+}
+
+#[derive(Component)]
+pub struct WinLose;

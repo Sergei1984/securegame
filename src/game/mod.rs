@@ -1,5 +1,3 @@
-use crate::common::MainCamera;
-
 use self::controller::*;
 use self::defence::*;
 use self::level::*;
@@ -35,7 +33,7 @@ pub fn enter_main_menu() -> SystemSet {
 }
 
 pub fn exit_main_menu() -> SystemSet {
-    SystemSet::new().with_system(cleanup_game)
+    SystemSet::new().with_system(cleanup_menu)
 }
 
 pub fn enter_draw_defence() -> SystemSet {
@@ -73,14 +71,11 @@ pub fn run_test_defence() -> SystemSet {
 }
 
 pub fn enter_win_lose() -> SystemSet {
-    ConditionSet::new()
-        .with_system(cleanup_game)
-        .with_system(init_win_lose)
-        .into()
+    ConditionSet::new().with_system(init_win_lose).into()
 }
 
 pub fn exit_win_lose() -> SystemSet {
-    SystemSet::new().with_system(cleanup_game)
+    SystemSet::new().with_system(cleanup_winlose)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -90,14 +85,4 @@ pub enum GameState {
     TestDefence,
     Win,
     Lose,
-}
-
-pub fn cleanup_game(
-    mut commands: Commands,
-    query: Query<Entity, (Without<MainCamera>, Without<Level>)>,
-) {
-    for entity in &mut query.iter() {
-        commands.entity(entity).despawn_recursive();
-    }
-    info!("Game cleaned");
 }
