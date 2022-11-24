@@ -78,6 +78,8 @@ pub fn exit_test_defence() -> SystemSet {
     SystemSet::new()
         .with_system(cleanup_swarm)
         .with_system(cleanup_target)
+        .with_system(cleanup_scene)
+        .with_system(cleanup_defence)
 }
 
 pub fn enter_win_lose() -> SystemSet {

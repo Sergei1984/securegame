@@ -47,6 +47,12 @@ pub fn init_defence_drawing(
         .insert(def);
 }
 
+pub fn cleanup_defence(mut commands: Commands, defence_query: Query<Entity, With<Defence>>) {
+    for e in defence_query.iter() {
+        commands.entity(e).despawn_recursive();
+    }
+}
+
 pub fn draw_defence_core(
     mouse_button: Res<Input<MouseButton>>,
     mut cursor_moved_events: EventReader<CursorMoved>,
@@ -125,11 +131,11 @@ pub fn update_defence_mesh(
     defence_changed_query: Query<&Defence>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let z = 30.0;
     if let Ok(def) = defence_changed_query.get_single() {
         if let Some(mesh) = meshes.get_mut(&def.mesh_handle) {
             info!("Rebuilding defence mesh");
 
+            let z = 30.0;
             if def.points.len() > 1 {
                 {
                     // POSITION

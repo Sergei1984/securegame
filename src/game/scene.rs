@@ -30,7 +30,8 @@ pub fn init_scene(
 
     // Create bounding collider
     commands
-        .spawn(RigidBody::Fixed)
+        .spawn(Bounds)
+        .insert(RigidBody::Fixed)
         .insert(AdditionalMassProperties::Mass(100_000.0))
         .insert(Restitution::coefficient(0.99))
         .insert(Collider::polyline(
@@ -110,6 +111,15 @@ pub fn init_scene(
         .insert(Friction::coefficient(1000.0))
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 }
+
+pub fn cleanup_scene(mut commands: Commands, bounds_query: Query<Entity, With<Bounds>>) {
+    for e in bounds_query.iter() {
+        commands.entity(e).despawn_recursive();
+    }
+}
+
+#[derive(Component)]
+pub struct Bounds;
 
 fn cuboid_from_coords(
     start_screen: Vec2,
