@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use game::{
-    enter_draw_defence, enter_main_menu, enter_test_defence, enter_win_lose, exit_main_menu,
-    exit_win_lose, game_common, run_draw_defence, run_test_defence, startup, GameState,
+    enter_draw_defence, enter_main_menu, enter_test_defence, enter_win_lose, exit_draw_defence,
+    exit_main_menu, exit_test_defence, exit_win_lose, game_common, run_draw_defence,
+    run_test_defence, startup, GameState,
 };
 use iyes_loopless::prelude::*;
 
@@ -29,9 +30,11 @@ fn main() {
         // Draw Defence
         .add_enter_system_set(GameState::DrawDefence, enter_draw_defence())
         .add_system_set(run_draw_defence())
+        .add_exit_system_set(GameState::DrawDefence, exit_draw_defence())
         // Test defence
         .add_enter_system_set(GameState::TestDefence, enter_test_defence())
         .add_system_set(run_test_defence())
+        .add_exit_system_set(GameState::TestDefence, exit_test_defence())
         // Win/Lose
         .add_enter_system_set(GameState::Win, enter_win_lose())
         .add_exit_system_set(GameState::Win, exit_win_lose())

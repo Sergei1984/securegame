@@ -54,6 +54,10 @@ pub fn run_draw_defence() -> SystemSet {
         .into()
 }
 
+pub fn exit_draw_defence() -> SystemSet {
+    SystemSet::new()
+}
+
 pub fn enter_test_defence() -> SystemSet {
     ConditionSet::new()
         .with_system(create_defence_collider)
@@ -68,6 +72,12 @@ pub fn run_test_defence() -> SystemSet {
         .with_system(direct_wasps)
         .with_system(detect_wasp_sting)
         .into()
+}
+
+pub fn exit_test_defence() -> SystemSet {
+    SystemSet::new()
+        .with_system(cleanup_swarm)
+        .with_system(cleanup_target)
 }
 
 pub fn enter_win_lose() -> SystemSet {

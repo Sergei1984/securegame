@@ -86,6 +86,21 @@ pub fn direct_wasps(
     }
 }
 
+pub fn cleanup_swarm(
+    mut commands: Commands,
+    hive_query: Query<Entity, With<Hive>>,
+
+    wasp_query: Query<Entity, With<Wasp>>,
+) {
+    let hive = hive_query.single();
+
+    commands.entity(hive).despawn_recursive();
+
+    for w in wasp_query.iter() {
+        commands.entity(w).despawn_recursive();
+    }
+}
+
 #[derive(Component, Debug)]
 pub struct Hive {
     pub position: Vec2,

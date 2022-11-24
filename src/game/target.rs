@@ -70,6 +70,12 @@ pub fn detect_wasp_sting(
     }
 }
 
+pub fn cleanup_target(mut commands: Commands, target_query: Query<Entity, With<Target>>) {
+    for t in target_query.iter() {
+        commands.entity(t).despawn_recursive();
+    }
+}
+
 #[derive(Component)]
 pub struct Target {
     pub win_timer: Timer,
