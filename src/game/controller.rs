@@ -12,7 +12,7 @@ pub fn controller(
         GameState::MainMenu => {
             if keyboard_input.just_pressed(KeyCode::Space) {
                 info!("SWITCH: Draw Defence");
-                commands.insert_resource(NextState(GameState::DrawDefence))
+                commands.insert_resource(NextState(GameState::LoadLevel))
             }
         }
         GameState::DrawDefence => {

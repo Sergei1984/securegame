@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use game::{
-    enter_draw_defence, enter_main_menu, enter_test_defence, enter_win_lose, exit_draw_defence,
-    exit_main_menu, exit_test_defence, exit_win_lose, game_common, run_draw_defence,
-    run_test_defence, startup, GameParameters, GameState,
+    enter_draw_defence, enter_load_level, enter_main_menu, enter_test_defence, enter_win_lose,
+    exit_draw_defence, exit_main_menu, exit_test_defence, exit_win_lose, game_common,
+    run_draw_defence, run_loading_level, run_test_defence, startup, CurrentLevel, GameParameters,
+    GameState,
 };
 use iyes_loopless::prelude::*;
 
@@ -24,6 +25,7 @@ fn main() {
             target_mass: 10.0,
             restitution: 0.98,
         })
+        .insert_resource(CurrentLevel { value: 1 })
         .insert_resource(RapierConfiguration {
             timestep_mode: TimestepMode::Variable {
                 max_dt: 1.0 / 60.0,
@@ -40,6 +42,9 @@ fn main() {
         // Main menu
         .add_enter_system_set(GameState::MainMenu, enter_main_menu())
         .add_exit_system_set(GameState::MainMenu, exit_main_menu())
+        // Load level
+        .add_enter_system_set(GameState::LoadLevel, enter_load_level())
+        .add_system_set(run_loading_level())
         // Draw Defence
         .add_enter_system_set(GameState::DrawDefence, enter_draw_defence())
         .add_system_set(run_draw_defence())

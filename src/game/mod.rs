@@ -21,9 +21,7 @@ mod target;
 mod win_lose;
 
 pub fn startup() -> SystemSet {
-    SystemSet::new()
-        .with_system(init_camera)
-        .with_system(init_level)
+    SystemSet::new().with_system(init_camera)
 }
 
 pub fn game_common() -> SystemSet {
@@ -36,6 +34,17 @@ pub fn enter_main_menu() -> SystemSet {
 
 pub fn exit_main_menu() -> SystemSet {
     SystemSet::new().with_system(cleanup_menu)
+}
+
+pub fn enter_load_level() -> SystemSet {
+    SystemSet::new().with_system(start_level_loading)
+}
+
+pub fn run_loading_level() -> SystemSet {
+    ConditionSet::new()
+        .run_in_state(GameState::LoadLevel)
+        .with_system(wait_for_loading)
+        .into()
 }
 
 pub fn enter_draw_defence() -> SystemSet {
@@ -82,6 +91,7 @@ pub fn exit_test_defence() -> SystemSet {
         .with_system(cleanup_target)
         .with_system(cleanup_scene)
         .with_system(cleanup_defence)
+        .with_system(cleanup_level)
 }
 
 pub fn enter_win_lose() -> SystemSet {
@@ -95,6 +105,7 @@ pub fn exit_win_lose() -> SystemSet {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GameState {
     MainMenu,
+    LoadLevel,
     DrawDefence,
     TestDefence,
     Win,
@@ -107,4 +118,9 @@ pub struct GameParameters {
     pub defence_mass: f32,
     pub target_mass: f32,
     pub restitution: f32,
+}
+
+#[derive(Resource)]
+pub struct CurrentLevel {
+    pub value: i32,
 }
