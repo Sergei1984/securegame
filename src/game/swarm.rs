@@ -12,11 +12,10 @@ pub fn create_hive(
     info!("Create hive");
 
     commands
-        .spawn()
-        .insert(Hive {
+        .spawn(Hive {
             position: Vec2::new(-200.0, 300.0),
         })
-        .insert_bundle(MaterialMesh2dBundle {
+        .insert(MaterialMesh2dBundle {
             mesh: meshes.add(Mesh::from(shape::Circle::new(10.0))).into(),
             transform: Transform::default().with_translation(Vec3::new(-200.0, 300.0, 5.0)),
             material: materials.add(ColorMaterial::from(Color::BLACK)),
@@ -43,19 +42,18 @@ pub fn spawn_wasps(
 
         let transform = Transform::from_xyz(translation.x, translation.y, translation.z);
         commands
-            .spawn()
-            .insert(Wasp {
-                timer: Timer::from_seconds(0.1 + rand_range(0.0, 0.9), true),
+            .spawn(Wasp {
+                timer: Timer::from_seconds(0.1 + rand_range(0.0, 0.9), TimerMode::Repeating),
             })
             .insert(RigidBody::Dynamic)
             .insert(ExternalImpulse::default())
-            .insert_bundle(TransformBundle::from(transform))
+            .insert(TransformBundle::from(transform))
             .insert(Collider::ball(5.0))
             .insert(Friction::coefficient(2.0))
             .insert(Restitution::coefficient(0.95))
             .insert(AdditionalMassProperties::Mass(50.0))
             .insert(GravityScale(0.0))
-            .insert_bundle(MaterialMesh2dBundle {
+            .insert(MaterialMesh2dBundle {
                 mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),
                 transform: Transform::default().with_translation(Vec3::new(
                     translation.x,

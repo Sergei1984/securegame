@@ -20,7 +20,7 @@ pub fn init_win_lose(
     };
 
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 align_items: AlignItems::Center,
@@ -32,7 +32,7 @@ pub fn init_win_lose(
             ..default()
         })
         .with_children(|parent| {
-            parent.spawn_bundle(TextBundle::from_sections([TextSection::new(
+            parent.spawn(TextBundle::from_sections([TextSection::new(
                 text,
                 TextStyle {
                     font: asset_server.load("fonts/FiraMono-Medium.ttf"),

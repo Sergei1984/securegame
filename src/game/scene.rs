@@ -5,10 +5,7 @@ use crate::common::get_world_coord_from_screen;
 use crate::common::MainCamera;
 
 pub fn init_camera(mut commands: Commands) {
-    commands
-        .spawn()
-        .insert_bundle(Camera2dBundle::default())
-        .insert(MainCamera);
+    commands.spawn(Camera2dBundle::default()).insert(MainCamera);
 }
 
 pub fn init_scene(
@@ -33,8 +30,7 @@ pub fn init_scene(
 
     // Create bounding collider
     commands
-        .spawn()
-        .insert(RigidBody::Fixed)
+        .spawn(RigidBody::Fixed)
         .insert(AdditionalMassProperties::Mass(100_000.0))
         .insert(Restitution::coefficient(0.99))
         .insert(Collider::polyline(
@@ -78,5 +74,5 @@ pub fn init_scene(
             None,
         ))
         .insert(Friction::coefficient(1000.0))
-        .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
+        .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 }

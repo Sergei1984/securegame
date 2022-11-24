@@ -35,8 +35,8 @@ pub fn init_defence_drawing(
     };
 
     commands
-        .spawn()
-        .insert_bundle(MaterialMesh2dBundle {
+        .spawn_empty()
+        .insert(MaterialMesh2dBundle {
             mesh: def.mesh_handle.clone().into(),
             transform: Transform::default()
                 .with_scale(Vec3::splat(1.))
@@ -115,7 +115,7 @@ pub fn create_defence_collider(
             .insert(Restitution::coefficient(0.95))
             .insert(Friction::coefficient(0.1))
             .insert(AdditionalMassProperties::Mass(10.0))
-            .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
+            .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 
         def.points.clear();
     }

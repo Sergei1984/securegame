@@ -14,9 +14,8 @@ pub fn init_target(
     info!("Init Target");
 
     commands
-        .spawn()
-        .insert(Target {
-            win_timer: Timer::from_seconds(5.0, false),
+        .spawn(Target {
+            win_timer: Timer::from_seconds(5.0, TimerMode::Once),
         })
         .insert(RigidBody::Dynamic)
         .insert(Collider::ball(10.0))
@@ -24,8 +23,8 @@ pub fn init_target(
         .insert(Friction::coefficient(1.0))
         .insert(AdditionalMassProperties::Mass(500.0))
         .insert(LockedAxes::TRANSLATION_LOCKED)
-        .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, -200.0, 0.0)))
-        .insert_bundle(MaterialMesh2dBundle {
+        .insert(TransformBundle::from(Transform::from_xyz(0.0, -200.0, 0.0)))
+        .insert(MaterialMesh2dBundle {
             mesh: meshes.add(Mesh::from(shape::Circle::new(10.0))).into(),
             transform: Transform::default().with_translation(Vec3::new(0.0, -200.0, 10.0)),
             material: materials.add(ColorMaterial::from(Color::GREEN)),
@@ -39,7 +38,7 @@ pub fn unlock_target(
 ) {
     info!("Starting targer survive timer");
     let mut target = target_query.single_mut();
-    target.win_timer = Timer::from_seconds(20.0, false);
+    target.win_timer = Timer::from_seconds(20.0, TimerMode::Once);
 
     if let Some(mut axes) = axes_query.iter_mut().next() {
         axes.set(LockedAxes::TRANSLATION_LOCKED, false);

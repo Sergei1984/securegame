@@ -73,7 +73,10 @@ pub fn run_test_defence() -> SystemSet {
 }
 
 pub fn enter_win_lose() -> SystemSet {
-    ConditionSet::new().with_system(init_win_lose).into()
+    ConditionSet::new()
+        .with_system(cleanup_game)
+        .with_system(init_win_lose)
+        .into()
 }
 
 pub fn exit_win_lose() -> SystemSet {
