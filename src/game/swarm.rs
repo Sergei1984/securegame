@@ -2,7 +2,7 @@ use crate::random::rand_range;
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use bevy_rapier2d::prelude::*;
 
-use super::{target::Target, GameParameters};
+use super::{defence::Defence, target::Target, GameParameters};
 
 pub fn create_hive(
     mut commands: Commands,
@@ -71,30 +71,6 @@ pub fn spawn_wasps(
                 material: materials.add(ColorMaterial::from(Color::RED)),
                 ..default()
             });
-    }
-}
-
-pub fn direct_wasps(
-    time: Res<Time>,
-    mut wasps_query: Query<(&mut Wasp, &Transform, &mut ExternalImpulse), With<Wasp>>,
-    transform_query: Query<&Transform, With<Target>>,
-) {
-    let target_transform = transform_query.single();
-
-    for (mut wasp, wasp_transform, mut external_impulse) in wasps_query.iter_mut() {
-        if wasp.timer.tick(time.delta()).just_finished() {
-            let impulse = Vec2::new(
-                target_transform.translation.x - wasp_transform.translation.x,
-                target_transform.translation.y - wasp_transform.translation.y,
-            )
-            .normalize();
-
-            let rotation = Quat::from_rotation_z(rand_range(-0.2, 0.2));
-
-            let rotated = rotation.mul_vec3([impulse.x, impulse.y, 0.0].into());
-
-            external_impulse.impulse = Vec2::new(rotated.x, rotated.y) * 5000.0;
-        }
     }
 }
 

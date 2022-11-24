@@ -19,10 +19,18 @@ fn main() {
         //
         .insert_resource(ClearColor(Color::WHITE))
         .insert_resource(GameParameters {
-            wasp_mass: 1000.0,
+            wasp_mass: 10000.0,
             defence_mass: 10.0,
             target_mass: 10.0,
             restitution: 0.98,
+        })
+        .insert_resource(RapierConfiguration {
+            timestep_mode: TimestepMode::Variable {
+                max_dt: 1.0 / 60.0,
+                time_scale: 1.0,
+                substeps: 10,
+            },
+            ..default()
         })
         .add_loopless_state(GameState::MainMenu)
         .add_system(bevy::window::close_on_esc)

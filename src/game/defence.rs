@@ -124,8 +124,8 @@ pub fn create_defence_collider(
             .insert(Restitution::coefficient(game_params.restitution))
             .insert(Friction::coefficient(0.01))
             .insert(Damping {
-                linear_damping: 0.3,
-                angular_damping: 0.3,
+                linear_damping: 0.01,
+                angular_damping: 0.01,
             })
             .insert(AdditionalMassProperties::Mass(game_params.defence_mass))
             .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));

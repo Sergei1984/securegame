@@ -1,3 +1,4 @@
+use self::ai::*;
 use self::controller::*;
 use self::defence::*;
 use self::level::*;
@@ -9,6 +10,7 @@ use self::win_lose::*;
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
+mod ai;
 mod controller;
 mod defence;
 mod level;
