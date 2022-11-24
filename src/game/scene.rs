@@ -29,6 +29,7 @@ pub fn init_scene(
     info!("Window size {}x{}", win.width(), win.height());
 
     win.set_resizable(false);
+    let offset = 5.0;
 
     // Create bounding collider
     commands
@@ -39,35 +40,35 @@ pub fn init_scene(
         .insert(Collider::polyline(
             vec![
                 get_world_coord_from_screen(
-                    Vec2::new(1.0, 1.0),
+                    Vec2::new(offset, offset),
                     win.width(),
                     win.height(),
                     camera,
                     camera_transform,
                 ),
                 get_world_coord_from_screen(
-                    Vec2::new(win.width() - 1.0, 1.0),
+                    Vec2::new(win.width() - offset, offset),
                     win.width(),
                     win.height(),
                     camera,
                     camera_transform,
                 ),
                 get_world_coord_from_screen(
-                    Vec2::new(win.width() - 1.0, win.height() - 1.0),
+                    Vec2::new(win.width() - offset, win.height() - offset),
                     win.width(),
                     win.height(),
                     camera,
                     camera_transform,
                 ),
                 get_world_coord_from_screen(
-                    Vec2::new(1.0, win.height() - 1.0),
+                    Vec2::new(offset, win.height() - offset),
                     win.width(),
                     win.height(),
                     camera,
                     camera_transform,
                 ),
                 get_world_coord_from_screen(
-                    Vec2::new(1.0, 1.0),
+                    Vec2::new(offset, offset),
                     win.width(),
                     win.height(),
                     camera,
@@ -77,5 +78,5 @@ pub fn init_scene(
             None,
         ))
         .insert(Friction::coefficient(1000.0))
-        .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, -0.0, 0.0)));
+        .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 }

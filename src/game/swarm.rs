@@ -18,7 +18,7 @@ pub fn create_hive(
         })
         .insert_bundle(MaterialMesh2dBundle {
             mesh: meshes.add(Mesh::from(shape::Circle::new(10.0))).into(),
-            transform: Transform::default().with_translation(Vec3::new(-200.0, 300.0, 1.0)),
+            transform: Transform::default().with_translation(Vec3::new(-200.0, 300.0, 5.0)),
             material: materials.add(ColorMaterial::from(Color::BLACK)),
             ..default()
         });
@@ -38,7 +38,7 @@ pub fn spawn_wasps(
         let translation = Vec3::new(
             hive.position.x + rand_range(-10.0, 10.0),
             hive.position.y + rand_range(-10.0, 10.0),
-            10.0,
+            0.0,
         );
 
         let transform = Transform::from_xyz(translation.x, translation.y, translation.z);
@@ -57,7 +57,11 @@ pub fn spawn_wasps(
             .insert(GravityScale(0.0))
             .insert_bundle(MaterialMesh2dBundle {
                 mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),
-                transform: Transform::default().with_translation(translation),
+                transform: Transform::default().with_translation(Vec3::new(
+                    translation.x,
+                    translation.y,
+                    10.0,
+                )),
                 material: materials.add(ColorMaterial::from(Color::RED)),
                 ..default()
             });

@@ -40,7 +40,7 @@ pub fn init_defence_drawing(
             mesh: def.mesh_handle.clone().into(),
             transform: Transform::default()
                 .with_scale(Vec3::splat(1.))
-                .with_translation(Vec3::new(0.0, 0.0, 1.0)),
+                .with_translation(Vec3::new(0.0, 0.0, 30.0)),
             material: materials.add(ColorMaterial::from(Color::BLACK)),
             ..default()
         })
@@ -115,18 +115,20 @@ pub fn create_defence_collider(
             .insert(Restitution::coefficient(0.95))
             .insert(Friction::coefficient(0.1))
             .insert(AdditionalMassProperties::Mass(10.0))
-            .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 10.0)));
+            .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 
         def.points.clear();
     }
 }
 
 pub fn update_defence_mesh(
-    defence_changed_query: Query<&Defence, Changed<Defence>>,
+    defence_changed_query: Query<&Defence>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
+    let z = 30.0;
     if let Ok(def) = defence_changed_query.get_single() {
         if let Some(mesh) = meshes.get_mut(&def.mesh_handle) {
+            info!("Rebuilding defence mesh");
             if def.points.len() > 1 {
                 let mut need_add_new_line = false;
                 {
@@ -141,11 +143,11 @@ pub fn update_defence_mesh(
                         let last_point = &def.points[l - 1];
 
                         if need_add_new_line {
-                            p.push([pre_last_point[0], pre_last_point[1], 0.0]);
-                            p.push([last_point[0], last_point[1], 0.0]);
+                            p.push([pre_last_point[0], pre_last_point[1], z]);
+                            p.push([last_point[0], last_point[1], z]);
                         } else {
                             let last_index = p.len() - 1;
-                            p[last_index] = [last_point[0], last_point[1], 0.0];
+                            p[last_index] = [last_point[0], last_point[1], z];
                         }
                     }
                 }

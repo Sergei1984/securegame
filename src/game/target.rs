@@ -27,7 +27,7 @@ pub fn init_target(
         .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, -200.0, 0.0)))
         .insert_bundle(MaterialMesh2dBundle {
             mesh: meshes.add(Mesh::from(shape::Circle::new(10.0))).into(),
-            transform: Transform::default().with_translation(Vec3::new(0.0, -200.0, 1.0)),
+            transform: Transform::default().with_translation(Vec3::new(0.0, -200.0, 10.0)),
             material: materials.add(ColorMaterial::from(Color::GREEN)),
             ..default()
         });
