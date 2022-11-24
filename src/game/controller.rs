@@ -24,13 +24,13 @@ pub fn controller(
         GameState::Win => {
             if keyboard_input.just_pressed(KeyCode::Space) {
                 info!("SWITCH: TestDefence");
-                commands.insert_resource(NextState(GameState::MainMenu))
+                commands.insert_resource(NextState(GameState::LoadLevel))
             }
         }
         GameState::Lose => {
             if keyboard_input.just_pressed(KeyCode::Space) {
                 info!("SWITCH: TestDefence");
-                commands.insert_resource(NextState(GameState::MainMenu))
+                commands.insert_resource(NextState(GameState::LoadLevel))
             }
         }
         _ => {}

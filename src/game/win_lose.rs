@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
-use super::GameState;
+use super::{CurrentLevel, GameState};
 
 pub fn init_win_lose(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     current_state: Res<CurrentState<GameState>>,
+    mut current_level: ResMut<CurrentLevel>,
 ) {
     let mut text = "You WIN!!!";
     let mut text_color = Color::GREEN;
@@ -18,6 +19,10 @@ pub fn init_win_lose(
         }
         _ => {}
     };
+
+    if current_state.0 == GameState::Win {
+        current_level.value = current_level.value + 1;
+    }
 
     commands
         .spawn(NodeBundle {
