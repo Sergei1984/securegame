@@ -33,46 +33,110 @@ pub fn init_scene(
         .spawn(RigidBody::Fixed)
         .insert(AdditionalMassProperties::Mass(100_000.0))
         .insert(Restitution::coefficient(0.99))
-        .insert(Collider::polyline(
-            vec![
-                get_world_coord_from_screen(
-                    Vec2::new(offset, offset),
-                    win.width(),
-                    win.height(),
-                    camera,
-                    camera_transform,
-                ),
-                get_world_coord_from_screen(
-                    Vec2::new(win.width() - offset, offset),
-                    win.width(),
-                    win.height(),
-                    camera,
-                    camera_transform,
-                ),
-                get_world_coord_from_screen(
-                    Vec2::new(win.width() - offset, win.height() - offset),
-                    win.width(),
-                    win.height(),
-                    camera,
-                    camera_transform,
-                ),
-                get_world_coord_from_screen(
-                    Vec2::new(offset, win.height() - offset),
-                    win.width(),
-                    win.height(),
-                    camera,
-                    camera_transform,
-                ),
-                get_world_coord_from_screen(
-                    Vec2::new(offset, offset),
-                    win.width(),
-                    win.height(),
-                    camera,
-                    camera_transform,
-                ),
-            ],
-            None,
-        ))
+        // .insert(Collider::polyline(
+        //     vec![
+        //         get_world_coord_from_screen(
+        //             Vec2::new(offset, offset),
+        //             win.width(),
+        //             win.height(),
+        //             camera,
+        //             camera_transform,
+        //         ),
+        //         get_world_coord_from_screen(
+        //             Vec2::new(win.width() - offset, offset),
+        //             win.width(),
+        //             win.height(),
+        //             camera,
+        //             camera_transform,
+        //         ),
+        //         get_world_coord_from_screen(
+        //             Vec2::new(win.width() - offset, win.height() - offset),
+        //             win.width(),
+        //             win.height(),
+        //             camera,
+        //             camera_transform,
+        //         ),
+        //         get_world_coord_from_screen(
+        //             Vec2::new(offset, win.height() - offset),
+        //             win.width(),
+        //             win.height(),
+        //             camera,
+        //             camera_transform,
+        //         ),
+        //         get_world_coord_from_screen(
+        //             Vec2::new(offset, offset),
+        //             win.width(),
+        //             win.height(),
+        //             camera,
+        //             camera_transform,
+        //         ),
+        //     ],
+        //     None,
+        // ))
+        .insert(Collider::compound(vec![
+            cuboid_from_coords(
+                Vec2::new(offset, offset),
+                Vec2::new(win.width() - offset, offset),
+                win.width(),
+                win.height(),
+                camera,
+                camera_transform,
+            ),
+            cuboid_from_coords(
+                Vec2::new(win.width() - offset, offset),
+                Vec2::new(win.width() - offset, win.height() - offset),
+                win.width(),
+                win.height(),
+                camera,
+                camera_transform,
+            ),
+            cuboid_from_coords(
+                Vec2::new(win.width() - offset, win.height() - offset),
+                Vec2::new(offset, win.height() - offset),
+                win.width(),
+                win.height(),
+                camera,
+                camera_transform,
+            ),
+            cuboid_from_coords(
+                Vec2::new(offset, win.height() - offset),
+                Vec2::new(offset, offset),
+                win.width(),
+                win.height(),
+                camera,
+                camera_transform,
+            ),
+        ]))
         .insert(Friction::coefficient(1000.0))
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
+}
+
+fn cuboid_from_coords(
+    start_screen: Vec2,
+    end_screen: Vec2,
+    window_width: f32,
+    window_height: f32,
+    camera: &Camera,
+    camera_transform: &GlobalTransform,
+) -> (Vec2, f32, Collider) {
+    let start = get_world_coord_from_screen(
+        start_screen,
+        window_width,
+        window_height,
+        camera,
+        camera_transform,
+    );
+    let end = get_world_coord_from_screen(
+        end_screen,
+        window_width,
+        window_height,
+        camera,
+        camera_transform,
+    );
+
+    let center = Vec2::new((start.x + end.x) / 2.0, (start.y + end.y) / 2.0);
+    let width = (start.x - end.y).abs() / 2.0;
+    let height = (start.y - end.y).abs() / 2.0;
+
+    return (center, 0.0, Collider::cuboid(width / 2.0, height / 2.0));
 }
