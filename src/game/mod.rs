@@ -44,7 +44,7 @@ pub fn enter_draw_defence() -> SystemSet {
         .with_system(init_scene)
         .with_system(create_hive)
         .with_system(init_defence_drawing)
-        .with_system(load_level)
+        // .with_system(load_level)
         .into()
 }
 

@@ -19,7 +19,7 @@ pub fn init_defence_drawing(
 ) {
     info!("Init Defence drawing");
 
-    let mut mesh = Mesh::new(bevy::render::render_resource::PrimitiveTopology::LineList);
+    let mut mesh = Mesh::new(bevy::render::render_resource::PrimitiveTopology::LineStrip);
 
     let empty3: Vec<[f32; 3]> = vec![];
     let empty2: Vec<[f32; 2]> = vec![];
@@ -129,25 +129,17 @@ pub fn update_defence_mesh(
     if let Ok(def) = defence_changed_query.get_single() {
         if let Some(mesh) = meshes.get_mut(&def.mesh_handle) {
             info!("Rebuilding defence mesh");
+
             if def.points.len() > 1 {
-                let mut need_add_new_line = false;
                 {
                     // POSITION
                     let data = mesh.attribute_mut(Mesh::ATTRIBUTE_POSITION);
+
                     if let Some(VertexAttributeValues::Float32x3(p)) = data {
-                        let num_lines = def.points.len() - 1;
-                        need_add_new_line = p.len() / 2 < num_lines;
+                        p.clear();
 
-                        let l = def.points.len();
-                        let pre_last_point = &def.points[l - 2];
-                        let last_point = &def.points[l - 1];
-
-                        if need_add_new_line {
-                            p.push([pre_last_point[0], pre_last_point[1], z]);
-                            p.push([last_point[0], last_point[1], z]);
-                        } else {
-                            let last_index = p.len() - 1;
-                            p[last_index] = [last_point[0], last_point[1], z];
+                        for point in def.points.iter() {
+                            p.push([point[0], point[1], z]);
                         }
                     }
                 }
@@ -155,8 +147,8 @@ pub fn update_defence_mesh(
                     // NORMAL
                     let data = mesh.attribute_mut(Mesh::ATTRIBUTE_NORMAL);
                     if let Some(VertexAttributeValues::Float32x3(p)) = data {
-                        if need_add_new_line {
-                            p.push([0.0, 0.0, 1.0]);
+                        p.clear();
+                        for _ in def.points.iter() {
                             p.push([0.0, 0.0, 1.0]);
                         }
                     }
@@ -165,8 +157,8 @@ pub fn update_defence_mesh(
                     // UV
                     let data = mesh.attribute_mut(Mesh::ATTRIBUTE_UV_0);
                     if let Some(VertexAttributeValues::Float32x2(p)) = data {
-                        if need_add_new_line {
-                            p.push([0.0, 0.0]);
+                        p.clear();
+                        for _ in def.points.iter() {
                             p.push([0.0, 0.0]);
                         }
                     }
