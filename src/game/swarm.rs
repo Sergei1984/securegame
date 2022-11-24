@@ -2,7 +2,7 @@ use crate::random::rand_range;
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use bevy_rapier2d::prelude::*;
 
-use super::target::Target;
+use super::{target::Target, GameParameters};
 
 pub fn create_hive(
     mut commands: Commands,
@@ -17,13 +17,14 @@ pub fn create_hive(
         })
         .insert(MaterialMesh2dBundle {
             mesh: meshes.add(Mesh::from(shape::Circle::new(10.0))).into(),
-            transform: Transform::default().with_translation(Vec3::new(-200.0, 300.0, 5.0)),
+            transform: Transform::default().with_translation(Vec3::new(-200.0, 200.0, 5.0)),
             material: materials.add(ColorMaterial::from(Color::BLACK)),
             ..default()
         });
 }
 
 pub fn spawn_wasps(
+    game_params: Res<GameParameters>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -35,23 +36,30 @@ pub fn spawn_wasps(
 
     for _ in 0..10 {
         let translation = Vec3::new(
-            hive.position.x + rand_range(-10.0, 10.0),
-            hive.position.y + rand_range(-10.0, 10.0),
+            hive.position.x + rand_range(-20.0, 20.0),
+            hive.position.y + rand_range(-20.0, 20.0),
             0.0,
         );
 
         let transform = Transform::from_xyz(translation.x, translation.y, translation.z);
         commands
             .spawn(Wasp {
-                timer: Timer::from_seconds(0.1 + rand_range(0.0, 0.9), TimerMode::Repeating),
+                timer: Timer::from_seconds(0.05 + rand_range(0.0, 0.2), TimerMode::Repeating),
             })
             .insert(RigidBody::Dynamic)
-            .insert(ExternalImpulse::default())
+            .insert(ExternalImpulse {
+                impulse: Vec2::ZERO,
+                torque_impulse: 0.0,
+            })
             .insert(TransformBundle::from(transform))
             .insert(Collider::ball(5.0))
-            .insert(Friction::coefficient(2.0))
-            .insert(Restitution::coefficient(0.95))
-            .insert(AdditionalMassProperties::Mass(50.0))
+            .insert(Friction::coefficient(20.0))
+            .insert(Restitution::coefficient(game_params.restitution))
+            .insert(AdditionalMassProperties::Mass(game_params.wasp_mass))
+            .insert(Damping {
+                linear_damping: 0.1,
+                angular_damping: 0.1,
+            })
             .insert(GravityScale(0.0))
             .insert(MaterialMesh2dBundle {
                 mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),
@@ -81,7 +89,11 @@ pub fn direct_wasps(
             )
             .normalize();
 
-            external_impulse.impulse = impulse * 3000.0;
+            let rotation = Quat::from_rotation_z(rand_range(-0.2, 0.2));
+
+            let rotated = rotation.mul_vec3([impulse.x, impulse.y, 0.0].into());
+
+            external_impulse.impulse = Vec2::new(rotated.x, rotated.y) * 5000.0;
         }
     }
 }

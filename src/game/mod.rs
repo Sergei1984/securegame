@@ -98,3 +98,11 @@ pub enum GameState {
     Win,
     Lose,
 }
+
+#[derive(Resource)]
+pub struct GameParameters {
+    pub wasp_mass: f32,
+    pub defence_mass: f32,
+    pub target_mass: f32,
+    pub restitution: f32,
+}

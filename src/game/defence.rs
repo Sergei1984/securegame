@@ -5,6 +5,8 @@ use bevy_rapier2d::prelude::*;
 
 use crate::common::{get_cursor_pos, MainCamera};
 
+use super::GameParameters;
+
 #[derive(Component, Default, Debug)]
 pub struct Defence {
     pub points: Vec<Vec2>,
@@ -89,6 +91,7 @@ pub fn create_defence_collider(
     mut commands: Commands,
     mut defence_query: Query<&mut Defence>,
     entity_query: Query<Entity, With<Defence>>,
+    game_params: Res<GameParameters>,
 ) {
     info!("Return pressed, creating collider");
     let mut def = defence_query.single_mut();
@@ -118,9 +121,13 @@ pub fn create_defence_collider(
             .entity(entity)
             .insert(RigidBody::Dynamic)
             .insert(Collider::compound(colliders))
-            .insert(Restitution::coefficient(0.95))
-            .insert(Friction::coefficient(0.1))
-            .insert(AdditionalMassProperties::Mass(10.0))
+            .insert(Restitution::coefficient(game_params.restitution))
+            .insert(Friction::coefficient(0.01))
+            .insert(Damping {
+                linear_damping: 0.3,
+                angular_damping: 0.3,
+            })
+            .insert(AdditionalMassProperties::Mass(game_params.defence_mass))
             .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 
         def.points.clear();

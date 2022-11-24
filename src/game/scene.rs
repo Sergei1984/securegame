@@ -54,7 +54,7 @@ pub fn init_scene(
         .spawn(Bounds)
         .insert(RigidBody::Fixed)
         .insert(AdditionalMassProperties::Mass(100_000.0))
-        .insert(Restitution::coefficient(0.99))
+        .insert(Restitution::coefficient(0.8))
         // .insert(Collider::polyline(
         //     vec![
         //         get_world_coord_from_screen(

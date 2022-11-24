@@ -4,9 +4,10 @@ use iyes_loopless::state::NextState;
 
 use crate::game::GameState;
 
-use super::swarm::Wasp;
+use super::{swarm::Wasp, GameParameters};
 
 pub fn init_target(
+    game_params: Res<GameParameters>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -19,11 +20,15 @@ pub fn init_target(
         })
         .insert(RigidBody::Dynamic)
         .insert(Collider::ball(10.0))
-        .insert(Restitution::coefficient(0.8))
+        .insert(Restitution::coefficient(game_params.restitution))
         .insert(Friction::coefficient(1.0))
-        .insert(AdditionalMassProperties::Mass(500.0))
+        .insert(AdditionalMassProperties::Mass(game_params.target_mass))
         .insert(LockedAxes::TRANSLATION_LOCKED)
         .insert(TransformBundle::from(Transform::from_xyz(0.0, -200.0, 0.0)))
+        .insert(Damping {
+            linear_damping: 0.5,
+            angular_damping: 0.5,
+        })
         .insert(MaterialMesh2dBundle {
             mesh: meshes.add(Mesh::from(shape::Circle::new(10.0))).into(),
             transform: Transform::default().with_translation(Vec3::new(0.0, -200.0, 10.0)),

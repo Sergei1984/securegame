@@ -3,7 +3,7 @@ use bevy_rapier2d::prelude::*;
 use game::{
     enter_draw_defence, enter_main_menu, enter_test_defence, enter_win_lose, exit_draw_defence,
     exit_main_menu, exit_test_defence, exit_win_lose, game_common, run_draw_defence,
-    run_test_defence, startup, GameState,
+    run_test_defence, startup, GameParameters, GameState,
 };
 use iyes_loopless::prelude::*;
 
@@ -18,7 +18,12 @@ fn main() {
         .add_plugin(RapierDebugRenderPlugin::default())
         //
         .insert_resource(ClearColor(Color::WHITE))
-        //
+        .insert_resource(GameParameters {
+            wasp_mass: 1000.0,
+            defence_mass: 10.0,
+            target_mass: 10.0,
+            restitution: 0.98,
+        })
         .add_loopless_state(GameState::MainMenu)
         .add_system(bevy::window::close_on_esc)
         // Common
