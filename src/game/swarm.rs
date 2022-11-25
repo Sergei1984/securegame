@@ -29,8 +29,10 @@ pub fn spawn_wasps(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     hive_query: Query<&Hive>,
+    level_query: Query<&super::level::Level>,
 ) {
     let hive = hive_query.single();
+    let level = level_query.single();
 
     info!("Spawning wasps");
 
@@ -38,7 +40,7 @@ pub fn spawn_wasps(
         let translation = Vec3::new(
             hive.position.x + rand_range(-20.0, 20.0),
             hive.position.y + rand_range(-20.0, 20.0),
-            0.0,
+            30.0,
         );
 
         let transform = Transform::from_xyz(translation.x, translation.y, translation.z);
@@ -51,23 +53,21 @@ pub fn spawn_wasps(
                 impulse: Vec2::ZERO,
                 torque_impulse: 0.0,
             })
-            .insert(TransformBundle::from(transform))
-            .insert(Collider::ball(5.0))
+            .insert(Collider::ball(20.0))
             .insert(Friction::coefficient(game_params.wasp.friction))
             .insert(Restitution::coefficient(game_params.wasp.restitution))
             .insert(AdditionalMassProperties::Mass(game_params.wasp.mass))
             .insert(game_params.wasp.damping.clone())
             .insert(GravityScale(0.0))
-            .insert(MaterialMesh2dBundle {
-                mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),
-                transform: Transform::default().with_translation(Vec3::new(
-                    translation.x,
-                    translation.y,
-                    10.0,
-                )),
-                material: materials.add(ColorMaterial::from(Color::RED)),
+            .insert(SpriteBundle {
+                sprite: Sprite {
+                    custom_size: Some([20.0, 20.0].into()),
+                    ..default()
+                },
+                texture: level.wasp_handle.clone(),
                 ..default()
-            });
+            })
+            .insert(TransformBundle::from(transform));
     }
 }
 

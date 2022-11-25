@@ -32,7 +32,6 @@ pub fn init_target(
                 ..default()
             },
             texture: level.dog_handle.clone(),
-            // transform: Transform::from_translation([0.0, 0.0, 20.0].into()),
             ..default()
         })
         .insert(TransformBundle::from(Transform::from_xyz(

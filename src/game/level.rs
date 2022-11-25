@@ -15,7 +15,7 @@ pub fn start_level_loading(
     let level = Level {
         bg_handle: asset_server.load(format!("levels/{}/level.png", current_level.value).as_str()),
         dog_handle: asset_server.load("dog.png"),
-        bee_handle: asset_server.load("bee.png"),
+        wasp_handle: asset_server.load("bee.png"),
     };
     info!("Start level loading");
 
@@ -68,7 +68,7 @@ pub fn wait_for_loading(
 
     if asset_server.get_load_state(&level.bg_handle) == LoadState::Loaded
         && asset_server.get_load_state(&level.dog_handle) == LoadState::Loaded
-        && asset_server.get_load_state(&level.bee_handle) == LoadState::Loaded
+        && asset_server.get_load_state(&level.wasp_handle) == LoadState::Loaded
     {
         commands.insert_resource(NextState(GameState::DrawDefence))
     }
@@ -84,7 +84,7 @@ pub fn cleanup_level(mut commands: Commands, level_query: Query<Entity, With<Lev
 pub struct Level {
     pub bg_handle: Handle<Image>,
     pub dog_handle: Handle<Image>,
-    pub bee_handle: Handle<Image>,
+    pub wasp_handle: Handle<Image>,
 }
 
 #[derive(Component)]
