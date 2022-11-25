@@ -123,6 +123,7 @@ pub struct GameParameters {
     pub wasp: EntityPhysicsParams,
     pub defence: EntityPhysicsParams,
     pub target: EntityPhysicsParams,
+    pub scene: EntityPhysicsParams,
 }
 
 impl Default for GameParameters {
@@ -154,6 +155,15 @@ impl Default for GameParameters {
                 },
                 restitution: 0.98,
                 friction: 0.01,
+            },
+            scene: EntityPhysicsParams {
+                mass: 100_000.0,
+                damping: Damping {
+                    linear_damping: 0.8,
+                    angular_damping: 0.9,
+                },
+                restitution: 0.8,
+                friction: 1000.0,
             },
         }
     }

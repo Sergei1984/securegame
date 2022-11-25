@@ -4,6 +4,8 @@ use bevy_rapier2d::prelude::*;
 use crate::common::get_world_coord_from_screen;
 use crate::common::MainCamera;
 
+use super::GameParameters;
+
 pub fn init_camera(mut commands: Commands, mut wnds: ResMut<Windows>) {
     commands.spawn(Camera2dBundle::default()).insert(MainCamera);
 
@@ -16,6 +18,7 @@ pub fn init_scene(
     mut commands: Commands,
     mut wnds: ResMut<Windows>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    game_params: Res<GameParameters>,
 ) {
     info!("Init scene");
 
@@ -53,8 +56,9 @@ pub fn init_scene(
     commands
         .spawn(Bounds)
         .insert(RigidBody::Fixed)
-        .insert(AdditionalMassProperties::Mass(100_000.0))
-        .insert(Restitution::coefficient(0.8))
+        .insert(AdditionalMassProperties::Mass(game_params.scene.mass))
+        .insert(Restitution::coefficient(game_params.scene.restitution))
+        .insert(Friction::coefficient(game_params.scene.friction))
         .insert(Collider::compound(vec![
             cuboid_from_screen_coords(
                 Vec2::new(offset, offset),
@@ -89,7 +93,6 @@ pub fn init_scene(
                 camera_transform,
             ),
         ]))
-        .insert(Friction::coefficient(1000.0))
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 }
 
