@@ -53,13 +53,10 @@ pub fn spawn_wasps(
             })
             .insert(TransformBundle::from(transform))
             .insert(Collider::ball(5.0))
-            .insert(Friction::coefficient(20.0))
-            .insert(Restitution::coefficient(game_params.restitution))
-            .insert(AdditionalMassProperties::Mass(game_params.wasp_mass))
-            .insert(Damping {
-                linear_damping: 0.1,
-                angular_damping: 0.1,
-            })
+            .insert(Friction::coefficient(game_params.wasp.friction))
+            .insert(Restitution::coefficient(game_params.wasp.restitution))
+            .insert(AdditionalMassProperties::Mass(game_params.wasp.mass))
+            .insert(game_params.wasp.damping.clone())
             .insert(GravityScale(0.0))
             .insert(MaterialMesh2dBundle {
                 mesh: meshes.add(Mesh::from(shape::Circle::new(5.0))).into(),

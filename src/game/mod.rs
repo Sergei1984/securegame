@@ -8,6 +8,7 @@ use self::swarm::*;
 use self::target::*;
 use self::win_lose::*;
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::Damping;
 use iyes_loopless::prelude::*;
 
 mod ai;
@@ -119,10 +120,50 @@ pub enum GameState {
 
 #[derive(Resource)]
 pub struct GameParameters {
-    pub wasp_mass: f32,
-    pub defence_mass: f32,
-    pub target_mass: f32,
+    pub wasp: EntityPhysicsParams,
+    pub defence: EntityPhysicsParams,
+    pub target: EntityPhysicsParams,
+}
+
+impl Default for GameParameters {
+    fn default() -> Self {
+        Self {
+            wasp: EntityPhysicsParams {
+                mass: 10000.0,
+                damping: Damping {
+                    linear_damping: 0.5,
+                    angular_damping: 1.0,
+                },
+                restitution: 0.9,
+                friction: 20.0,
+            },
+            defence: EntityPhysicsParams {
+                mass: 10.0,
+                damping: Damping {
+                    linear_damping: 0.2,
+                    angular_damping: 0.2,
+                },
+                restitution: 0.9,
+                friction: 0.01,
+            },
+            target: EntityPhysicsParams {
+                mass: 10.0,
+                damping: Damping {
+                    linear_damping: 0.8,
+                    angular_damping: 0.9,
+                },
+                restitution: 0.98,
+                friction: 0.01,
+            },
+        }
+    }
+}
+
+pub struct EntityPhysicsParams {
+    pub mass: f32,
+    pub damping: Damping,
     pub restitution: f32,
+    pub friction: f32,
 }
 
 #[derive(Resource)]

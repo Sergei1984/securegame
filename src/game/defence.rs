@@ -121,13 +121,10 @@ pub fn create_defence_collider(
             .entity(entity)
             .insert(RigidBody::Dynamic)
             .insert(Collider::compound(colliders))
-            .insert(Restitution::coefficient(game_params.restitution))
-            .insert(Friction::coefficient(0.01))
-            .insert(Damping {
-                linear_damping: 0.01,
-                angular_damping: 0.01,
-            })
-            .insert(AdditionalMassProperties::Mass(game_params.defence_mass))
+            .insert(Restitution::coefficient(game_params.defence.restitution))
+            .insert(Friction::coefficient(game_params.defence.friction))
+            .insert(game_params.defence.damping.clone())
+            .insert(AdditionalMassProperties::Mass(game_params.defence.mass))
             .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
     }
 }

@@ -19,12 +19,7 @@ fn main() {
         .add_plugin(RapierDebugRenderPlugin::default())
         //
         .insert_resource(ClearColor(Color::WHITE))
-        .insert_resource(GameParameters {
-            wasp_mass: 10000.0,
-            defence_mass: 10.0,
-            target_mass: 10.0,
-            restitution: 0.98,
-        })
+        .insert_resource(GameParameters::default())
         .insert_resource(CurrentLevel { value: 1 })
         .insert_resource(RapierConfiguration {
             timestep_mode: TimestepMode::Variable {

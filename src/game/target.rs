@@ -23,14 +23,11 @@ pub fn init_target(
         })
         .insert(RigidBody::Dynamic)
         .insert(Collider::ball(10.0))
-        .insert(Restitution::coefficient(game_params.restitution))
-        .insert(Friction::coefficient(1.0))
-        .insert(AdditionalMassProperties::Mass(game_params.target_mass))
         .insert(LockedAxes::TRANSLATION_LOCKED)
-        .insert(Damping {
-            linear_damping: 0.8,
-            angular_damping: 0.9,
-        })
+        .insert(Restitution::coefficient(game_params.target.restitution))
+        .insert(Friction::coefficient(game_params.target.friction))
+        .insert(AdditionalMassProperties::Mass(game_params.target.mass))
+        .insert(game_params.target.damping.clone())
         .insert(SpriteBundle {
             sprite: Sprite {
                 custom_size: Some([20.0, 20.0].into()),
