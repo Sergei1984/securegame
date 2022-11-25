@@ -129,12 +129,54 @@ pub fn create_defence_collider(
             })
             .insert(AdditionalMassProperties::Mass(game_params.defence_mass))
             .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
-
-        def.points.clear();
     }
 }
 
-pub fn update_defence_mesh(
+pub fn create_final_defence_mesh(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    defence_query: Query<(Entity, &Defence), With<Defence>>,
+) {
+    let (entity, def) = defence_query.single();
+
+    info!("Create defence final mesh (len={})", def.points.len());
+
+    if def.points.len() > 1 {
+        let mut prev_point = def.points.iter().next().unwrap();
+        for point in def.points.iter().skip(1) {
+            let v = Vec2::new(point.x - prev_point.x, point.y - prev_point.y);
+
+            let midpoint = Vec2::new(
+                (prev_point.x + point.x) / 2.0,
+                (prev_point.y + point.y) / 2.0,
+            );
+
+            let angle = -v.angle_between(Vec2::new(1.0, 0.0));
+
+            let rotation = Quat::from_rotation_z(angle);
+
+            info!("Create defence rect ({}, {}) ", prev_point, point);
+
+            commands.entity(entity).with_children(|parent| {
+                parent.spawn(MaterialMesh2dBundle {
+                    mesh: meshes
+                        .add(Mesh::from(shape::Box::new(v.length(), 5.0, 1.0)))
+                        .into(),
+                    transform: Transform::default()
+                        .with_rotation(rotation)
+                        .with_translation(Vec3::new(midpoint.x, midpoint.y, 20.0)),
+                    material: materials.add(ColorMaterial::from(Color::BLACK)),
+                    ..default()
+                });
+            });
+
+            prev_point = point;
+        }
+    }
+}
+
+pub fn update_drawing_defence_mesh(
     defence_changed_query: Query<&Defence>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {

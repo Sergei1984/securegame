@@ -55,48 +55,8 @@ pub fn init_scene(
         .insert(RigidBody::Fixed)
         .insert(AdditionalMassProperties::Mass(100_000.0))
         .insert(Restitution::coefficient(0.8))
-        // .insert(Collider::polyline(
-        //     vec![
-        //         get_world_coord_from_screen(
-        //             Vec2::new(offset, offset),
-        //             win.width(),
-        //             win.height(),
-        //             camera,
-        //             camera_transform,
-        //         ),
-        //         get_world_coord_from_screen(
-        //             Vec2::new(win.width() - offset, offset),
-        //             win.width(),
-        //             win.height(),
-        //             camera,
-        //             camera_transform,
-        //         ),
-        //         get_world_coord_from_screen(
-        //             Vec2::new(win.width() - offset, win.height() - offset),
-        //             win.width(),
-        //             win.height(),
-        //             camera,
-        //             camera_transform,
-        //         ),
-        //         get_world_coord_from_screen(
-        //             Vec2::new(offset, win.height() - offset),
-        //             win.width(),
-        //             win.height(),
-        //             camera,
-        //             camera_transform,
-        //         ),
-        //         get_world_coord_from_screen(
-        //             Vec2::new(offset, offset),
-        //             win.width(),
-        //             win.height(),
-        //             camera,
-        //             camera_transform,
-        //         ),
-        //     ],
-        //     None,
-        // ))
         .insert(Collider::compound(vec![
-            cuboid_from_coords(
+            cuboid_from_screen_coords(
                 Vec2::new(offset, offset),
                 Vec2::new(win.width() - offset, offset),
                 win.width(),
@@ -104,7 +64,7 @@ pub fn init_scene(
                 camera,
                 camera_transform,
             ),
-            cuboid_from_coords(
+            cuboid_from_screen_coords(
                 Vec2::new(win.width() - offset, offset),
                 Vec2::new(win.width() - offset, win.height() - offset),
                 win.width(),
@@ -112,7 +72,7 @@ pub fn init_scene(
                 camera,
                 camera_transform,
             ),
-            cuboid_from_coords(
+            cuboid_from_screen_coords(
                 Vec2::new(win.width() - offset, win.height() - offset),
                 Vec2::new(offset, win.height() - offset),
                 win.width(),
@@ -120,7 +80,7 @@ pub fn init_scene(
                 camera,
                 camera_transform,
             ),
-            cuboid_from_coords(
+            cuboid_from_screen_coords(
                 Vec2::new(offset, win.height() - offset),
                 Vec2::new(offset, offset),
                 win.width(),
@@ -142,7 +102,7 @@ pub fn cleanup_scene(mut commands: Commands, bounds_query: Query<Entity, With<Bo
 #[derive(Component)]
 pub struct Bounds;
 
-fn cuboid_from_coords(
+fn cuboid_from_screen_coords(
     start_screen: Vec2,
     end_screen: Vec2,
     window_width: f32,

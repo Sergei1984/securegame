@@ -65,7 +65,7 @@ pub fn run_draw_defence() -> SystemSet {
     ConditionSet::new()
         .run_in_state(GameState::DrawDefence)
         .with_system(draw_defence_core)
-        .with_system(update_defence_mesh)
+        .with_system(update_drawing_defence_mesh)
         .into()
 }
 
@@ -76,6 +76,7 @@ pub fn exit_draw_defence() -> SystemSet {
 pub fn enter_test_defence() -> SystemSet {
     ConditionSet::new()
         .with_system(create_defence_collider)
+        .with_system(create_final_defence_mesh)
         .with_system(spawn_wasps)
         .with_system(unlock_target)
         .into()
