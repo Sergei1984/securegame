@@ -36,7 +36,7 @@ pub fn spawn_wasps(
 
     info!("Spawning wasps");
 
-    for _ in 0..10 {
+    for i in 0..10 {
         let translation = Vec3::new(
             hive.position.x + rand_range(-20.0, 20.0),
             hive.position.y + rand_range(-20.0, 20.0),
@@ -54,6 +54,7 @@ pub fn spawn_wasps(
                 torque_impulse: 0.0,
             })
             .insert(Collider::ball(20.0))
+            .insert(CollisionGroups::new((1 << i) as Group, Group::ALL))
             .insert(Friction::coefficient(game_params.wasp.friction))
             .insert(Restitution::coefficient(game_params.wasp.restitution))
             .insert(AdditionalMassProperties::Mass(game_params.wasp.mass))
