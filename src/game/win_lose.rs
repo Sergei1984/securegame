@@ -21,7 +21,10 @@ pub fn init_win_lose(
     };
 
     if current_state.0 == GameState::Win {
-        current_level.value = (current_level.value + 1) % 2;
+        current_level.value = current_level.value + 1;
+        if current_level.value > 2 {
+            current_level.value = 1;
+        }
     }
 
     commands
