@@ -163,21 +163,16 @@ fn scene_from_texture(bg: &Image) -> ControlPlaneInfo {
             info!("Green pixel {}; {}x{}", idx, x, y);
             result.target_screen_coords = [x as f32, y as f32].into();
         }
-
-        if pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 && pixel[3] == 255 {
-            info!("Black pixel {}; {}x{}", idx, x, y);
-            result.target_screen_coords = [x as f32, y as f32].into();
-        }
     }
 
     for step in 0..(width / 10) {
         let x = step * 10;
 
-        for y in 10..height {
+        for y in 0..height {
             let start = y * width * u8_per_pixel + x * u8_per_pixel;
             let pixel = &bg.data[start..(start + u8_per_pixel)];
 
-            if pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 {
+            if pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 && pixel[3] == 255 {
                 result
                     .land_line_screen_coords
                     .push([x as f32, (height - y) as f32].into());
@@ -186,12 +181,12 @@ fn scene_from_texture(bg: &Image) -> ControlPlaneInfo {
         }
     }
 
-    // let last = result.land_line_screen_coords.len() - 1;
-    // result.land_line_screen_coords[last].x = width as f32;
+    let last = result.land_line_screen_coords.len() - 1;
+    result.land_line_screen_coords[last].x = width as f32;
 
-    for point in result.land_line_screen_coords.iter() {
-        info!("Land line {}", point);
-    }
+    // for point in result.land_line_screen_coords.iter() {
+    //     info!("Land line {}", point);
+    // }
 
     result
 }
