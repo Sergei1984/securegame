@@ -8,9 +8,9 @@ pub fn start_level_loading(
     asset_server: Res<AssetServer>,
     current_level: Res<CurrentLevel>,
 ) {
-    commands.insert_resource(NextState(GameState::DrawDefence));
+    // commands.insert_resource(NextState(GameState::DrawDefence));
 
-    return;
+    // return;
 
     let bg_handle: Handle<Image> =
         asset_server.load(format!("levels/{}/level.png", current_level.value).as_str());
