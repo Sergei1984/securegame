@@ -135,7 +135,7 @@ impl Default for GameParameters {
             wasp: EntityPhysicsParams {
                 mass: 10000.0,
                 damping: Damping {
-                    linear_damping: 0.5,
+                    linear_damping: 0.02,
                     angular_damping: 1.0,
                 },
                 restitution: 0.9,

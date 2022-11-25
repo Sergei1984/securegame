@@ -20,7 +20,7 @@ pub fn init_target(
             win_timer: Timer::from_seconds(5.0, TimerMode::Once),
         })
         .insert(RigidBody::Dynamic)
-        .insert(Collider::ball(10.0))
+        .insert(Collider::ball(30.0))
         .insert(CollisionGroups::new(game_params.scene_group, Group::ALL))
         .insert(LockedAxes::TRANSLATION_LOCKED)
         .insert(Restitution::coefficient(game_params.target.restitution))
@@ -29,7 +29,7 @@ pub fn init_target(
         .insert(game_params.target.damping.clone())
         .insert(SpriteBundle {
             sprite: Sprite {
-                custom_size: Some([20.0, 20.0].into()),
+                custom_size: Some([60.0, 60.0].into()),
                 ..default()
             },
             texture: level.dog_handle.clone(),

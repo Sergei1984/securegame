@@ -16,7 +16,7 @@ pub fn create_hive(mut commands: Commands, level_query: Query<&super::level::Lev
         .spawn_empty()
         .insert(SpriteBundle {
             sprite: Sprite {
-                custom_size: Some([40.0, 40.0].into()),
+                custom_size: Some([80.0, 80.0].into()),
                 ..default()
             },
             texture: level.hive_handle.clone(),
@@ -60,7 +60,7 @@ pub fn spawn_wasps(
                 impulse: Vec2::ZERO,
                 torque_impulse: 0.0,
             })
-            .insert(Collider::ball(20.0))
+            .insert(Collider::ball(10.0))
             .insert(CollisionGroups::new(
                 Group::from_bits(wasp_group).unwrap(),
                 game_params.scene_group,
