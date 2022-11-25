@@ -166,7 +166,7 @@ impl Default for GameParameters {
                     angular_damping: 0.9,
                 },
                 restitution: 0.8,
-                friction: 1000.0,
+                friction: 0.1,
             },
         }
     }
