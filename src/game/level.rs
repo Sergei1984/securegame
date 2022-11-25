@@ -12,20 +12,21 @@ pub fn start_level_loading(
 
     // return;
 
-    let bg_handle: Handle<Image> =
-        asset_server.load(format!("levels/{}/level.png", current_level.value).as_str());
     let level = Level {
-        bg_handle: bg_handle.clone(),
+        bg_handle: asset_server.load(format!("levels/{}/level.png", current_level.value).as_str()),
+        dog_handle: asset_server.load("dog.png"),
+        bee_handle: asset_server.load("bee.png"),
     };
     info!("Start level loading");
 
     commands
-        .spawn(level)
+        .spawn_empty()
         .insert(SpriteBundle {
-            texture: bg_handle,
+            texture: level.bg_handle.clone(),
             ..default()
         })
-        .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 1.0)));
+        .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 1.0)))
+        .insert(level);
 
     commands
         .spawn(NodeBundle {
@@ -64,7 +65,11 @@ pub fn wait_for_loading(
     asset_server: Res<AssetServer>,
 ) {
     let level = level_query.single();
-    if asset_server.get_load_state(&level.bg_handle) == LoadState::Loaded {
+
+    if asset_server.get_load_state(&level.bg_handle) == LoadState::Loaded
+        && asset_server.get_load_state(&level.dog_handle) == LoadState::Loaded
+        && asset_server.get_load_state(&level.bee_handle) == LoadState::Loaded
+    {
         commands.insert_resource(NextState(GameState::DrawDefence))
     }
 }
@@ -78,6 +83,8 @@ pub fn cleanup_level(mut commands: Commands, level_query: Query<Entity, With<Lev
 #[derive(Component)]
 pub struct Level {
     pub bg_handle: Handle<Image>,
+    pub dog_handle: Handle<Image>,
+    pub bee_handle: Handle<Image>,
 }
 
 #[derive(Component)]

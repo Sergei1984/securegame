@@ -11,8 +11,11 @@ pub fn init_target(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    level_query: Query<&super::level::Level>,
 ) {
     info!("Init Target");
+
+    let level = level_query.single();
 
     commands
         .spawn(Target {
@@ -24,17 +27,22 @@ pub fn init_target(
         .insert(Friction::coefficient(1.0))
         .insert(AdditionalMassProperties::Mass(game_params.target_mass))
         .insert(LockedAxes::TRANSLATION_LOCKED)
-        .insert(TransformBundle::from(Transform::from_xyz(0.0, -200.0, 0.0)))
         .insert(Damping {
-            linear_damping: 0.5,
-            angular_damping: 0.5,
+            linear_damping: 0.8,
+            angular_damping: 0.9,
         })
-        .insert(MaterialMesh2dBundle {
-            mesh: meshes.add(Mesh::from(shape::Circle::new(10.0))).into(),
-            transform: Transform::default().with_translation(Vec3::new(0.0, -200.0, 10.0)),
-            material: materials.add(ColorMaterial::from(Color::GREEN)),
+        .insert(SpriteBundle {
+            sprite: Sprite {
+                custom_size: Some([20.0, 20.0].into()),
+                ..default()
+            },
+            texture: level.dog_handle.clone(),
+            // transform: Transform::from_translation([0.0, 0.0, 20.0].into()),
             ..default()
-        });
+        })
+        .insert(TransformBundle::from(Transform::from_xyz(
+            0.0, -200.0, 20.0,
+        )));
 }
 
 pub fn unlock_target(
