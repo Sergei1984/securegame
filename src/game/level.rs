@@ -1,6 +1,8 @@
 use bevy::{asset::LoadState, prelude::*};
 use iyes_loopless::prelude::*;
 
+use crate::common::{get_world_coord_from_screen, MainCamera};
+
 use super::{CurrentLevel, GameState};
 
 pub fn start_level_loading(
@@ -14,6 +16,8 @@ pub fn start_level_loading(
 
     let level = Level {
         bg_handle: asset_server.load(format!("levels/{}/level.png", current_level.value).as_str()),
+        control_plane_handle: asset_server
+            .load(format!("levels/{}/control.png", current_level.value).as_str()),
         dog_handle: asset_server.load("dog.png"),
         wasp_handle: asset_server.load("bee.png"),
         hive_handle: asset_server.load("hive.png"),
@@ -66,17 +70,46 @@ pub fn wait_for_loading(
     mut commands: Commands,
     mut level_query: Query<&mut Level>,
     asset_server: Res<AssetServer>,
-    mut assets: ResMut<Assets<Image>>,
+    assets: Res<Assets<Image>>,
+    mut wnds: ResMut<Windows>,
+    q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
 ) {
-    let level = level_query.single();
+    let mut level = level_query.single_mut();
     if level
         .all_handles()
         .iter()
         .all(|h| asset_server.get_load_state(*h) == LoadState::Loaded)
     {
-        let mut bg = assets.get_mut(&level.bg_handle.clone()).unwrap();
+        let win = wnds.get_primary_mut().unwrap();
+        let (camera, camera_transform) = q_camera.single();
 
-        scene_from_texture(bg);
+        let bg = assets.get(&level.control_plane_handle.clone()).unwrap();
+
+        let control = scene_from_texture(bg);
+
+        level.hive_position = get_world_coord_from_screen(
+            [
+                control.hive_screen_coords.x,
+                win.height() - control.hive_screen_coords.y,
+            ]
+            .into(),
+            win.width(),
+            win.height(),
+            camera,
+            camera_transform,
+        );
+
+        level.target_position = get_world_coord_from_screen(
+            [
+                control.target_screen_coords.x,
+                win.height() - control.target_screen_coords.y,
+            ]
+            .into(),
+            win.width(),
+            win.height(),
+            camera,
+            camera_transform,
+        );
 
         commands.insert_resource(NextState(GameState::DrawDefence))
     }
@@ -88,7 +121,9 @@ pub fn cleanup_level(mut commands: Commands, level_query: Query<Entity, With<Lev
     }
 }
 
-fn scene_from_texture(bg: &mut Image) {
+fn scene_from_texture(bg: &Image) -> ControlPlaneInfo {
+    let mut result = ControlPlaneInfo::default();
+
     let width = bg.size().x.floor() as usize;
     let height = bg.size().y.floor() as usize;
     let u8_per_pixel = bg.data.len() / (width * height);
@@ -97,7 +132,7 @@ fn scene_from_texture(bg: &mut Image) {
     let color_marker = &bg.data[0..u8_per_pixel];
 
     info!(
-        "Bg {}x{}, u8 per pixel {}, color marker {}",
+        "Control plane {}x{}, u8 per pixel {}, color marker {}",
         width,
         height,
         u8_per_pixel,
@@ -108,24 +143,38 @@ fn scene_from_texture(bg: &mut Image) {
             .join(",")
     );
 
-    for x in 0..width {
-        for y in 0..height {
-            let pixel_start = x * u8_per_pixel + x * y * u8_per_pixel;
-            let pixel = &bg.data[pixel_start..(pixel_start + u8_per_pixel)];
+    for idx in 0..(width * height) {
+        let y = idx / width;
+        let x = idx - y * width;
 
-            if pixel[0] == 255 && pixel[1] == 0 && pixel[2] == 0 {
-                info!("Red pixel {},{}", x, y);
-                for idx in pixel_start..(pixel_start + u8_per_pixel) {
-                    bg.data[idx] = 255;
-                }
-            }
+        let start = idx * u8_per_pixel;
+
+        let pixel = &bg.data[start..(start + u8_per_pixel)];
+
+        if pixel[0] == 255 && pixel[1] == 0 && pixel[2] == 0 && pixel[3] == 255 {
+            info!("Red pixel {}; {}x{}", idx, x, y);
+            result.hive_screen_coords = [x as f32, y as f32].into();
+        }
+
+        if pixel[0] == 0 && pixel[1] == 255 && pixel[2] == 0 && pixel[3] == 255 {
+            info!("Green pixel {}; {}x{}", idx, x, y);
+            result.target_screen_coords = [x as f32, y as f32].into();
         }
     }
+
+    result
+}
+
+#[derive(Default)]
+struct ControlPlaneInfo {
+    pub hive_screen_coords: Vec2,
+    pub target_screen_coords: Vec2,
 }
 
 #[derive(Component)]
 pub struct Level {
     pub bg_handle: Handle<Image>,
+    pub control_plane_handle: Handle<Image>,
     pub dog_handle: Handle<Image>,
     pub wasp_handle: Handle<Image>,
     pub hive_handle: Handle<Image>,
@@ -138,6 +187,7 @@ impl Level {
     pub fn all_handles(&self) -> Vec<&Handle<Image>> {
         vec![
             &self.bg_handle,
+            &self.control_plane_handle,
             &self.dog_handle,
             &self.wasp_handle,
             &self.hive_handle,
