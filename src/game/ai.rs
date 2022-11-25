@@ -29,7 +29,7 @@ pub fn direct_wasps(
             let rotated = rotation.mul_vec3([impulse.x, impulse.y, 0.0].into());
 
             external_impulse.impulse =
-                Vec2::new(rotated.x, rotated.y) * game_params.wasp_mass * 10.0;
+                Vec2::new(rotated.x, rotated.y) * game_params.wasp.mass * 10.0;
         }
     }
 }

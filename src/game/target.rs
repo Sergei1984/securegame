@@ -1,4 +1,4 @@
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use iyes_loopless::state::NextState;
 
@@ -9,8 +9,6 @@ use super::{swarm::Wasp, GameParameters};
 pub fn init_target(
     game_params: Res<GameParameters>,
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     level_query: Query<&super::level::Level>,
 ) {
     info!("Init Target");

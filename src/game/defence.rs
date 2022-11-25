@@ -89,12 +89,12 @@ pub fn draw_defence_core(
 
 pub fn create_defence_collider(
     mut commands: Commands,
-    mut defence_query: Query<&mut Defence>,
+    mut defence_query: Query<&Defence>,
     entity_query: Query<Entity, With<Defence>>,
     game_params: Res<GameParameters>,
 ) {
     info!("Return pressed, creating collider");
-    let mut def = defence_query.single_mut();
+    let def = defence_query.single_mut();
     let entity = entity_query.single();
 
     if def.points.len() > 1 {
