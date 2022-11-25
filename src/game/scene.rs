@@ -93,7 +93,7 @@ pub fn init_scene(
                 camera_transform,
             ),
         ]))
-        .insert(CollisionGroups::new(Group::ALL, Group::ALL))
+        .insert(CollisionGroups::new(game_params.scene_group, Group::ALL))
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 }
 

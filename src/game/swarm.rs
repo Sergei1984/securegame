@@ -1,33 +1,38 @@
 use crate::random::rand_range;
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use super::GameParameters;
 
-pub fn create_hive(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+pub fn create_hive(mut commands: Commands, level_query: Query<&super::level::Level>) {
     info!("Create hive");
 
+    let hive = Hive {
+        position: Vec2::new(-200.0, 300.0),
+    };
+
+    let level = level_query.single();
     commands
-        .spawn(Hive {
-            position: Vec2::new(-200.0, 300.0),
-        })
-        .insert(MaterialMesh2dBundle {
-            mesh: meshes.add(Mesh::from(shape::Circle::new(10.0))).into(),
-            transform: Transform::default().with_translation(Vec3::new(-200.0, 200.0, 5.0)),
-            material: materials.add(ColorMaterial::from(Color::BLACK)),
+        .spawn_empty()
+        .insert(SpriteBundle {
+            sprite: Sprite {
+                custom_size: Some([40.0, 40.0].into()),
+                ..default()
+            },
+            texture: level.hive_handle.clone(),
             ..default()
-        });
+        })
+        .insert(TransformBundle::from(Transform::from_xyz(
+            hive.position.x,
+            hive.position.y,
+            10.0,
+        )))
+        .insert(hive);
 }
 
 pub fn spawn_wasps(
     game_params: Res<GameParameters>,
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     hive_query: Query<&Hive>,
     level_query: Query<&super::level::Level>,
 ) {
@@ -43,6 +48,8 @@ pub fn spawn_wasps(
             30.0,
         );
 
+        let wasp_group: u32 = 1 << i;
+
         let transform = Transform::from_xyz(translation.x, translation.y, translation.z);
         commands
             .spawn(Wasp {
@@ -54,7 +61,10 @@ pub fn spawn_wasps(
                 torque_impulse: 0.0,
             })
             .insert(Collider::ball(20.0))
-            .insert(CollisionGroups::new((1 << i) as Group, Group::ALL))
+            .insert(CollisionGroups::new(
+                Group::from_bits(wasp_group).unwrap(),
+                game_params.scene_group,
+            ))
             .insert(Friction::coefficient(game_params.wasp.friction))
             .insert(Restitution::coefficient(game_params.wasp.restitution))
             .insert(AdditionalMassProperties::Mass(game_params.wasp.mass))

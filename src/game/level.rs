@@ -16,6 +16,7 @@ pub fn start_level_loading(
         bg_handle: asset_server.load(format!("levels/{}/level.png", current_level.value).as_str()),
         dog_handle: asset_server.load("dog.png"),
         wasp_handle: asset_server.load("bee.png"),
+        hive_handle: asset_server.load("hive.png"),
     };
     info!("Start level loading");
 
@@ -65,10 +66,10 @@ pub fn wait_for_loading(
     asset_server: Res<AssetServer>,
 ) {
     let level = level_query.single();
-
-    if asset_server.get_load_state(&level.bg_handle) == LoadState::Loaded
-        && asset_server.get_load_state(&level.dog_handle) == LoadState::Loaded
-        && asset_server.get_load_state(&level.wasp_handle) == LoadState::Loaded
+    if level
+        .all_handles()
+        .iter()
+        .all(|h| asset_server.get_load_state(*h) == LoadState::Loaded)
     {
         commands.insert_resource(NextState(GameState::DrawDefence))
     }
@@ -85,6 +86,18 @@ pub struct Level {
     pub bg_handle: Handle<Image>,
     pub dog_handle: Handle<Image>,
     pub wasp_handle: Handle<Image>,
+    pub hive_handle: Handle<Image>,
+}
+
+impl Level {
+    pub fn all_handles(&self) -> Vec<&Handle<Image>> {
+        vec![
+            &self.bg_handle,
+            &self.dog_handle,
+            &self.wasp_handle,
+            &self.hive_handle,
+        ]
+    }
 }
 
 #[derive(Component)]

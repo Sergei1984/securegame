@@ -9,6 +9,7 @@ use self::target::*;
 use self::win_lose::*;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Damping;
+use bevy_rapier2d::prelude::Group;
 use iyes_loopless::prelude::*;
 
 mod ai;
@@ -124,11 +125,13 @@ pub struct GameParameters {
     pub defence: EntityPhysicsParams,
     pub target: EntityPhysicsParams,
     pub scene: EntityPhysicsParams,
+    pub scene_group: Group,
 }
 
 impl Default for GameParameters {
     fn default() -> Self {
         Self {
+            scene_group: Group::GROUP_32,
             wasp: EntityPhysicsParams {
                 mass: 10000.0,
                 damping: Damping {

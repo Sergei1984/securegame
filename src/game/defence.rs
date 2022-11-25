@@ -121,7 +121,7 @@ pub fn create_defence_collider(
             .entity(entity)
             .insert(RigidBody::Dynamic)
             .insert(Collider::compound(colliders))
-            .insert(CollisionGroups::new(Group::ALL, Group::ALL))
+            .insert(CollisionGroups::new(game_params.scene_group, Group::ALL))
             .insert(Restitution::coefficient(game_params.defence.restitution))
             .insert(Friction::coefficient(game_params.defence.friction))
             .insert(game_params.defence.damping.clone())

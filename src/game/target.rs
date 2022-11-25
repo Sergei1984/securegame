@@ -21,7 +21,7 @@ pub fn init_target(
         })
         .insert(RigidBody::Dynamic)
         .insert(Collider::ball(10.0))
-        .insert(CollisionGroups::new(Group::ALL, Group::ALL))
+        .insert(CollisionGroups::new(game_params.scene_group, Group::ALL))
         .insert(LockedAxes::TRANSLATION_LOCKED)
         .insert(Restitution::coefficient(game_params.target.restitution))
         .insert(Friction::coefficient(game_params.target.friction))
