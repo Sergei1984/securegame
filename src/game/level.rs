@@ -184,10 +184,6 @@ fn scene_from_texture(bg: &Image) -> ControlPlaneInfo {
     let last = result.land_line_screen_coords.len() - 1;
     result.land_line_screen_coords[last].x = width as f32;
 
-    // for point in result.land_line_screen_coords.iter() {
-    //     info!("Land line {}", point);
-    // }
-
     result
 }
 
