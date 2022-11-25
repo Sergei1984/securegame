@@ -36,7 +36,9 @@ pub fn init_target(
             ..default()
         })
         .insert(TransformBundle::from(Transform::from_xyz(
-            0.0, -200.0, 20.0,
+            level.target_position.x,
+            level.target_position.y,
+            20.0,
         )));
 }
 

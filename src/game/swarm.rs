@@ -7,11 +7,12 @@ use super::GameParameters;
 pub fn create_hive(mut commands: Commands, level_query: Query<&super::level::Level>) {
     info!("Create hive");
 
+    let level = level_query.single();
+
     let hive = Hive {
-        position: Vec2::new(-200.0, 300.0),
+        position: level.hive_position.clone(),
     };
 
-    let level = level_query.single();
     commands
         .spawn_empty()
         .insert(SpriteBundle {
