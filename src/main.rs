@@ -2,9 +2,9 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use game::{
     enter_draw_defence, enter_load_level, enter_main_menu, enter_test_defence, enter_win_lose,
-    exit_draw_defence, exit_main_menu, exit_test_defence, exit_win_lose, game_common,
-    run_draw_defence, run_loading_level, run_test_defence, startup, CurrentLevel, GameParameters,
-    GameState,
+    exit_draw_defence, exit_loading_level, exit_main_menu, exit_test_defence, exit_win_lose,
+    game_common, run_draw_defence, run_loading_level, run_test_defence, startup, CurrentLevel,
+    GameParameters, GameState,
 };
 use iyes_loopless::prelude::*;
 
@@ -45,6 +45,7 @@ fn main() {
         // Load level
         .add_enter_system_set(GameState::LoadLevel, enter_load_level())
         .add_system_set(run_loading_level())
+        .add_exit_system_set(GameState::LoadLevel, exit_loading_level())
         // Draw Defence
         .add_enter_system_set(GameState::DrawDefence, enter_draw_defence())
         .add_system_set(run_draw_defence())

@@ -47,6 +47,10 @@ pub fn run_loading_level() -> SystemSet {
         .into()
 }
 
+pub fn exit_loading_level() -> SystemSet {
+    SystemSet::new().with_system(cleanup_loading)
+}
+
 pub fn enter_draw_defence() -> SystemSet {
     ConditionSet::new()
         .with_system(init_target)

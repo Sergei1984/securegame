@@ -140,8 +140,6 @@ pub fn update_defence_mesh(
 ) {
     if let Ok(def) = defence_changed_query.get_single() {
         if let Some(mesh) = meshes.get_mut(&def.mesh_handle) {
-            info!("Rebuilding defence mesh");
-
             let z = 30.0;
             if def.points.len() > 1 {
                 {

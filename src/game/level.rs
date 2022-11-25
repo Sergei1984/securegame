@@ -48,18 +48,19 @@ pub fn start_level_loading(
         });
 }
 
+pub fn cleanup_loading(mut commands: Commands, loading_query: Query<Entity, With<Loading>>) {
+    for e in loading_query.iter() {
+        commands.entity(e).despawn_recursive();
+    }
+}
+
 pub fn wait_for_loading(
     mut commands: Commands,
     level_query: Query<&Level>,
     asset_server: Res<AssetServer>,
-    loading_query: Query<Entity, With<Loading>>,
 ) {
     let level = level_query.single();
     if asset_server.get_load_state(&level.bg_handle) == LoadState::Loaded {
-        for e in loading_query.iter() {
-            commands.entity(e).despawn_recursive();
-        }
-
         commands.insert_resource(NextState(GameState::DrawDefence))
     }
 }

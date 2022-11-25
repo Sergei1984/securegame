@@ -2,7 +2,7 @@ use crate::random::rand_range;
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use bevy_rapier2d::prelude::*;
 
-use super::{defence::Defence, target::Target, GameParameters};
+use super::GameParameters;
 
 pub fn create_hive(
     mut commands: Commands,

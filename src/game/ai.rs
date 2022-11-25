@@ -3,14 +3,13 @@ use bevy_rapier2d::prelude::*;
 
 use crate::random::rand_range;
 
-use super::{defence::Defence, swarm::Wasp, target::Target, GameParameters};
+use super::{swarm::Wasp, target::Target, GameParameters};
 
 pub fn direct_wasps(
     time: Res<Time>,
     game_params: Res<GameParameters>,
     mut wasps_query: Query<(&mut Wasp, &Transform, &mut ExternalImpulse), With<Wasp>>,
     target_transform_query: Query<&Transform, With<Target>>,
-    defence_query: Query<&ReadMassProperties, With<Defence>>,
 ) {
     let target_transform = target_transform_query.single();
     // let defence = defence_query.single();
