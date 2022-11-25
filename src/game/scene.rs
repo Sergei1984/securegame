@@ -19,6 +19,7 @@ pub fn init_scene(
     mut wnds: ResMut<Windows>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
     game_params: Res<GameParameters>,
+    level_query: Query<&super::level::Level>,
 ) {
     info!("Init scene");
 
@@ -29,6 +30,29 @@ pub fn init_scene(
 
     let win = wnds.get_primary_mut().unwrap();
     let (camera, camera_transform) = q_camera.single();
+
+    let level = level_query.single();
+
+    let mut land_colliders: Vec<(Vec2, f32, Collider)> = vec![];
+
+    if level.land_line_screen_coords.len() > 1 {
+        let mut prev_point = level.land_line_screen_coords.iter().next().unwrap();
+
+        for point in level.land_line_screen_coords.iter().skip(1) {
+            let collider = cuboid_from_screen_coords(
+                *prev_point,
+                *point,
+                win.width(),
+                win.height(),
+                camera,
+                camera_transform,
+            );
+
+            land_colliders.push(collider);
+
+            prev_point = point;
+        }
+    }
 
     info!(
         "Window size {}x{}, world coords: {} -> {}",
@@ -52,6 +76,41 @@ pub fn init_scene(
 
     let offset = 5.0;
 
+    let bounds_collider = vec![
+        cuboid_from_screen_coords(
+            Vec2::new(offset, offset),
+            Vec2::new(win.width() - offset, offset),
+            win.width(),
+            win.height(),
+            camera,
+            camera_transform,
+        ),
+        cuboid_from_screen_coords(
+            Vec2::new(win.width() - offset, offset),
+            Vec2::new(win.width() - offset, win.height() - offset),
+            win.width(),
+            win.height(),
+            camera,
+            camera_transform,
+        ),
+        cuboid_from_screen_coords(
+            Vec2::new(win.width() - offset, win.height() - offset),
+            Vec2::new(offset, win.height() - offset),
+            win.width(),
+            win.height(),
+            camera,
+            camera_transform,
+        ),
+        cuboid_from_screen_coords(
+            Vec2::new(offset, win.height() - offset),
+            Vec2::new(offset, offset),
+            win.width(),
+            win.height(),
+            camera,
+            camera_transform,
+        ),
+    ];
+
     // Create bounding collider
     commands
         .spawn(Bounds)
@@ -59,40 +118,9 @@ pub fn init_scene(
         .insert(AdditionalMassProperties::Mass(game_params.scene.mass))
         .insert(Restitution::coefficient(game_params.scene.restitution))
         .insert(Friction::coefficient(game_params.scene.friction))
-        .insert(Collider::compound(vec![
-            cuboid_from_screen_coords(
-                Vec2::new(offset, offset),
-                Vec2::new(win.width() - offset, offset),
-                win.width(),
-                win.height(),
-                camera,
-                camera_transform,
-            ),
-            cuboid_from_screen_coords(
-                Vec2::new(win.width() - offset, offset),
-                Vec2::new(win.width() - offset, win.height() - offset),
-                win.width(),
-                win.height(),
-                camera,
-                camera_transform,
-            ),
-            cuboid_from_screen_coords(
-                Vec2::new(win.width() - offset, win.height() - offset),
-                Vec2::new(offset, win.height() - offset),
-                win.width(),
-                win.height(),
-                camera,
-                camera_transform,
-            ),
-            cuboid_from_screen_coords(
-                Vec2::new(offset, win.height() - offset),
-                Vec2::new(offset, offset),
-                win.width(),
-                win.height(),
-                camera,
-                camera_transform,
-            ),
-        ]))
+        .insert(Collider::compound(
+            vec![land_colliders, bounds_collider].concat(),
+        ))
         .insert(CollisionGroups::new(game_params.scene_group, Group::ALL))
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 }

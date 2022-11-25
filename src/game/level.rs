@@ -23,6 +23,7 @@ pub fn start_level_loading(
         hive_handle: asset_server.load("hive.png"),
         target_position: [0.0, -200.0].into(),
         hive_position: [-200.0, 300.0].into(),
+        land_line_screen_coords: vec![],
     };
     info!("Start level loading");
 
@@ -111,6 +112,8 @@ pub fn wait_for_loading(
             camera_transform,
         );
 
+        level.land_line_screen_coords = control.land_line_screen_coords;
+
         commands.insert_resource(NextState(GameState::DrawDefence))
     }
 }
@@ -160,6 +163,34 @@ fn scene_from_texture(bg: &Image) -> ControlPlaneInfo {
             info!("Green pixel {}; {}x{}", idx, x, y);
             result.target_screen_coords = [x as f32, y as f32].into();
         }
+
+        if pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 && pixel[3] == 255 {
+            info!("Black pixel {}; {}x{}", idx, x, y);
+            result.target_screen_coords = [x as f32, y as f32].into();
+        }
+    }
+
+    for step in 0..(width / 10) {
+        let x = step * 10;
+
+        for y in 10..height {
+            let start = y * width * u8_per_pixel + x * u8_per_pixel;
+            let pixel = &bg.data[start..(start + u8_per_pixel)];
+
+            if pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 {
+                result
+                    .land_line_screen_coords
+                    .push([x as f32, (height - y) as f32].into());
+                break;
+            }
+        }
+    }
+
+    // let last = result.land_line_screen_coords.len() - 1;
+    // result.land_line_screen_coords[last].x = width as f32;
+
+    for point in result.land_line_screen_coords.iter() {
+        info!("Land line {}", point);
     }
 
     result
@@ -169,6 +200,7 @@ fn scene_from_texture(bg: &Image) -> ControlPlaneInfo {
 struct ControlPlaneInfo {
     pub hive_screen_coords: Vec2,
     pub target_screen_coords: Vec2,
+    pub land_line_screen_coords: Vec<Vec2>,
 }
 
 #[derive(Component)]
@@ -181,6 +213,7 @@ pub struct Level {
 
     pub hive_position: Vec2,
     pub target_position: Vec2,
+    pub land_line_screen_coords: Vec<Vec2>,
 }
 
 impl Level {
