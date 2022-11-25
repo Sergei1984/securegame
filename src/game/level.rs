@@ -165,6 +165,21 @@ fn scene_from_texture(bg: &Image) -> ControlPlaneInfo {
         }
     }
 
+    // Land lines
+    // Put bounds to land lines
+    let offset = 5.0;
+    result.land_line_screen_coords.push([offset, offset].into());
+    result
+        .land_line_screen_coords
+        .push([(width as f32) - offset, offset].into());
+    result
+        .land_line_screen_coords
+        .push([(width as f32) - offset, (height as f32) - offset].into());
+    result
+        .land_line_screen_coords
+        .push([offset, (height as f32) - offset].into());
+    result.land_line_screen_coords.push([offset, offset].into());
+
     for step in 0..(width / 10) {
         let x = step * 10;
 

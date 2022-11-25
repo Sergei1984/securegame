@@ -74,43 +74,6 @@ pub fn init_scene(
         ),
     );
 
-    let offset = 5.0;
-
-    let bounds_collider = vec![
-        cuboid_from_screen_coords(
-            Vec2::new(offset, offset),
-            Vec2::new(win.width() - offset, offset),
-            win.width(),
-            win.height(),
-            camera,
-            camera_transform,
-        ),
-        cuboid_from_screen_coords(
-            Vec2::new(win.width() - offset, offset),
-            Vec2::new(win.width() - offset, win.height() - offset),
-            win.width(),
-            win.height(),
-            camera,
-            camera_transform,
-        ),
-        cuboid_from_screen_coords(
-            Vec2::new(win.width() - offset, win.height() - offset),
-            Vec2::new(offset, win.height() - offset),
-            win.width(),
-            win.height(),
-            camera,
-            camera_transform,
-        ),
-        cuboid_from_screen_coords(
-            Vec2::new(offset, win.height() - offset),
-            Vec2::new(offset, offset),
-            win.width(),
-            win.height(),
-            camera,
-            camera_transform,
-        ),
-    ];
-
     // Create bounding collider
     commands
         .spawn(Bounds)
@@ -118,9 +81,7 @@ pub fn init_scene(
         .insert(AdditionalMassProperties::Mass(game_params.scene.mass))
         .insert(Restitution::coefficient(game_params.scene.restitution))
         .insert(Friction::coefficient(game_params.scene.friction))
-        .insert(Collider::compound(
-            vec![land_colliders, bounds_collider].concat(),
-        ))
+        .insert(Collider::compound(land_colliders))
         .insert(CollisionGroups::new(game_params.scene_group, Group::ALL))
         .insert(TransformBundle::from(Transform::from_xyz(0.0, 0.0, 0.0)));
 }
@@ -158,8 +119,8 @@ fn cuboid_from_screen_coords(
     );
 
     let center = Vec2::new((start.x + end.x) / 2.0, (start.y + end.y) / 2.0);
-    let width = ((start.x - end.x).abs()).max(20.0);
-    let height = ((start.y - end.y).abs()).max(20.0);
+    let width = ((start.x - end.x).abs()).max(5.0);
+    let height = ((start.y - end.y).abs()).max(5.0);
 
     return (center, 0.0, Collider::cuboid(width / 2.0, height / 2.0));
 }
