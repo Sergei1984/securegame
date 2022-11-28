@@ -83,6 +83,8 @@ pub fn draw_defence_core(
             def.adding_new_end = false;
         }
 
+        let filter = QueryFilter::default();
+
         if def.adding_new_end {
             let def_len = def.points.len();
             if level.land_lines.len() > 1 && def_len > 1 {
@@ -90,6 +92,13 @@ pub fn draw_defence_core(
                 let def_end = position;
 
                 let (pos, angle, collider) = cuboid_from(&def_start, &def_end, 5.0);
+
+                if rapier
+                    .intersection_with_shape(pos, angle, &collider, filter)
+                    .is_some()
+                {
+                    return;
+                }
             }
 
             let last_index = def.points.len() - 1;
