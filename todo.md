@@ -1,6 +1,6 @@
-- [ ] Prevent intersection of defence and static colliders
+- [x] Prevent intersection of defence and static colliders
 - [x] Add overlapping of land line colliders
   - [x] Fix rotation of land line colliders
 - [ ] Add path finding for wasps
 - [ ] Add more realistic wasp flying simulation
-- [ ] Add checking for closed or interacting defence shape
+- [ ] Add checking for closed or intersecting defence shape
