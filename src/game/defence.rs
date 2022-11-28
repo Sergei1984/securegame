@@ -64,13 +64,33 @@ pub fn draw_defence_core(
     level_query: Query<&Level>,
     rapier: Res<RapierContext>,
 ) {
+    let filter = QueryFilter::default();
+
     let mut def = defence_query.single_mut();
     let level = level_query.single();
+
+    let def_len = def.points.len();
 
     if cursor_moved_events.iter().last().is_some() {
         let position = get_cursor_pos(&wnds, &camera_query);
 
         if mouse_button.just_pressed(MouseButton::Left) && !def.adding_new_end {
+            let def_end = position;
+            let def_start = if def_len > 1 {
+                def.points[def_len - 2]
+            } else {
+                position + 0.01
+            };
+
+            let (pos, angle, collider) = cuboid_from(&def_start, &def_end, 5.0);
+
+            if rapier
+                .intersection_with_shape(pos, angle, &collider, filter)
+                .is_some()
+            {
+                return;
+            }
+
             def.points.push(position.clone());
             if def.points.len() == 1 {
                 def.points.push(position.clone());
@@ -83,10 +103,7 @@ pub fn draw_defence_core(
             def.adding_new_end = false;
         }
 
-        let filter = QueryFilter::default();
-
         if def.adding_new_end {
-            let def_len = def.points.len();
             if level.land_lines.len() > 1 && def_len > 1 {
                 let def_start = def.points[def_len - 2];
                 let def_end = position;
