@@ -18,6 +18,7 @@ pub fn init_target(
     commands
         .spawn(Target {
             win_timer: Timer::from_seconds(5.0, TimerMode::Once),
+            // was_bitten: false,
         })
         .insert(RigidBody::Dynamic)
         .insert(Collider::ball(30.0))
@@ -45,10 +46,12 @@ pub fn init_target(
 pub fn unlock_target(
     mut target_query: Query<&mut Target>,
     mut axes_query: Query<&mut LockedAxes, With<Target>>,
+    mut rapier: ResMut<RapierConfiguration>,
 ) {
     info!("Starting targer survive timer");
     let mut target = target_query.single_mut();
     target.win_timer = Timer::from_seconds(20.0, TimerMode::Once);
+    rapier.physics_pipeline_active = true;
 
     if let Some(mut axes) = axes_query.iter_mut().next() {
         axes.set(LockedAxes::TRANSLATION_LOCKED, false);
@@ -62,19 +65,24 @@ pub fn detect_wasp_sting(
     wasp_query: Query<Entity, With<Wasp>>,
     target_query: Query<Entity, With<Target>>,
     mut target_query2: Query<&mut Target>,
+    mut rapier: ResMut<RapierConfiguration>,
 ) {
-    let mut t = target_query2.single_mut();
-    if t.win_timer.tick(time.delta()).finished() {
-        info!("Target survived!");
-        commands.insert_resource(NextState(GameState::Win));
-        return;
-    }
+    if rapier.physics_pipeline_active {
+        let mut t = target_query2.single_mut();
+        if t.win_timer.tick(time.delta()).finished() {
+            info!("Target survived!");
+            commands.insert_resource(NextState(GameState::Win));
+            return;
+        }
 
-    for target in target_query.iter() {
-        for wasp in wasp_query.iter() {
-            if rapier_context.contact_pair(target, wasp).is_some() {
-                info!("Target bitten by the wasp!");
-                commands.insert_resource(NextState(GameState::Lose));
+        for target_entity in target_query.iter() {
+            for wasp in wasp_query.iter() {
+                if rapier_context.contact_pair(target_entity, wasp).is_some() {
+                    info!("Target bitten by the wasp!");
+                    // commands.insert_resource(NextState(GameState::Lose));
+                    rapier.physics_pipeline_active = false;
+                    // target.was_bitten = true;
+                }
             }
         }
     }
