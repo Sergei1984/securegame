@@ -21,7 +21,8 @@ pub fn init_target(
             // was_bitten: false,
         })
         .insert(RigidBody::Dynamic)
-        .insert(Collider::ball(30.0))
+        .insert(Ccd::enabled())
+        .insert(Collider::ball(game_params.target_radius))
         .insert(CollisionGroups::new(game_params.scene_group, Group::ALL))
         .insert(LockedAxes::TRANSLATION_LOCKED)
         .insert(Restitution::coefficient(game_params.target.restitution))
@@ -62,26 +63,24 @@ pub fn detect_wasp_sting(
     mut commands: Commands,
     time: Res<Time>,
     rapier_context: Res<RapierContext>,
-    wasp_query: Query<Entity, With<Wasp>>,
-    target_query: Query<Entity, With<Target>>,
-    mut target_query2: Query<&mut Target>,
+    wasp_collider_query: Query<Entity, With<Wasp>>,
+    target_collider_query: Query<Entity, With<Target>>,
+    mut target_timer_query: Query<&mut Target>,
     mut rapier: ResMut<RapierConfiguration>,
 ) {
     if rapier.physics_pipeline_active {
-        let mut t = target_query2.single_mut();
+        let mut t = target_timer_query.single_mut();
         if t.win_timer.tick(time.delta()).finished() {
             info!("Target survived!");
             commands.insert_resource(NextState(GameState::Win));
             return;
         }
 
-        for target_entity in target_query.iter() {
-            for wasp in wasp_query.iter() {
-                if let Some(contact_pair) = rapier_context.contact_pair(target_entity, wasp) {
-                    if contact_pair.has_any_active_contacts() {
-                        info!("Target bitten by the wasp!");
-                        rapier.physics_pipeline_active = false;
-                    }
+        for target_entity in target_collider_query.iter() {
+            for wasp in wasp_collider_query.iter() {
+                if rapier_context.contact_pair(target_entity, wasp).is_some() {
+                    info!("Target bitten by the wasp!");
+                    rapier.physics_pipeline_active = false;
                 }
             }
         }

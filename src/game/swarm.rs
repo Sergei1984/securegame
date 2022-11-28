@@ -57,11 +57,12 @@ pub fn spawn_wasps(
                 timer: Timer::from_seconds(0.05 + rand_range(0.0, 0.2), TimerMode::Repeating),
             })
             .insert(RigidBody::Dynamic)
+            .insert(Ccd::enabled())
             .insert(ExternalImpulse {
                 impulse: Vec2::ZERO,
                 torque_impulse: 0.0,
             })
-            .insert(Collider::ball(10.0))
+            .insert(Collider::ball(game_params.wasp_radius))
             .insert(CollisionGroups::new(
                 Group::from_bits(wasp_group).unwrap(),
                 game_params.scene_group,

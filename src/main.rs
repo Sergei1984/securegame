@@ -21,21 +21,21 @@ fn main() {
         .insert_resource(ClearColor(Color::WHITE))
         .insert_resource(GameParameters::default())
         .insert_resource(CurrentLevel { value: 1 })
-        // .insert_resource(RapierConfiguration {
-        //     timestep_mode: TimestepMode::Variable {
-        //         max_dt: 1.0 / 60.0,
-        //         time_scale: 1.0,
-        //         substeps: 10,
-        //     },
-        //     ..default()
-        // })
         .insert_resource(RapierConfiguration {
-            timestep_mode: TimestepMode::Fixed {
-                dt: 1.0 / 60.0,
-                substeps: 30,
+            timestep_mode: TimestepMode::Variable {
+                max_dt: 1.0 / 30.0,
+                time_scale: 1.0,
+                substeps: 20,
             },
             ..default()
         })
+        // .insert_resource(RapierConfiguration {
+        //     timestep_mode: TimestepMode::Fixed {
+        //         dt: 1.0 / 30.0,
+        //         substeps: 100,
+        //     },
+        //     ..default()
+        // })
         .add_loopless_state(GameState::MainMenu)
         .add_system(bevy::window::close_on_esc)
         // Common

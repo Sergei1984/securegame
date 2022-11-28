@@ -72,6 +72,7 @@ pub fn init_scene(
     commands
         .spawn(Bounds)
         .insert(RigidBody::Fixed)
+        .insert(Ccd::enabled())
         .insert(AdditionalMassProperties::Mass(game_params.scene.mass))
         .insert(Restitution::coefficient(game_params.scene.restitution))
         .insert(Friction::coefficient(game_params.scene.friction))

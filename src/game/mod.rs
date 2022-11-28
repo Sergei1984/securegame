@@ -121,6 +121,8 @@ pub enum GameState {
 
 #[derive(Resource)]
 pub struct GameParameters {
+    pub wasp_radius: f32,
+    pub target_radius: f32,
     pub wasp: EntityPhysicsParams,
     pub defence: EntityPhysicsParams,
     pub target: EntityPhysicsParams,
@@ -131,6 +133,8 @@ pub struct GameParameters {
 impl Default for GameParameters {
     fn default() -> Self {
         Self {
+            target_radius: 30.0,
+            wasp_radius: 10.0,
             scene_group: Group::GROUP_32,
             wasp: EntityPhysicsParams {
                 mass: 10000.0,

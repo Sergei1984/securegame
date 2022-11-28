@@ -142,6 +142,7 @@ pub fn create_defence_collider(
         commands
             .entity(entity)
             .insert(RigidBody::Dynamic)
+            .insert(Ccd::enabled())
             .insert(Collider::compound(colliders))
             .insert(CollisionGroups::new(game_params.scene_group, Group::ALL))
             .insert(Restitution::coefficient(game_params.defence.restitution))
