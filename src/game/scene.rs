@@ -118,9 +118,17 @@ fn cuboid_from_screen_coords(
         camera_transform,
     );
 
-    let center = Vec2::new((start.x + end.x) / 2.0, (start.y + end.y) / 2.0);
-    let width = ((start.x - end.x).abs()).max(5.0);
-    let height = ((start.y - end.y).abs()).max(5.0);
+    let axis = start - end;
+    let width = axis.length() + 3.0;
+    let midpoint = Vec2::new((end.x + start.x) / 2.0, (end.y + start.y) / 2.0);
+    let angle = -axis.angle_between(Vec2::new(1.0, 0.0));
 
-    return (center, 0.0, Collider::cuboid(width / 2.0, height / 2.0));
+    let collider = Collider::cuboid(width / 2.0, 5.0);
+    return (midpoint, angle, collider);
+
+    // let center = Vec2::new((start.x + end.x) / 2.0, (start.y + end.y) / 2.0);
+    // let width = ((start.x - end.x).abs()).max(5.0);
+    // let height = ((start.y - end.y).abs()).max(5.0);
+
+    // return (center, 0.0, Collider::cuboid(width / 2.0, height / 2.0));
 }
