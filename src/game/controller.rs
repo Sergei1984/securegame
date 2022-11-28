@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::RapierConfiguration;
 use iyes_loopless::prelude::*;
 
 use super::GameState;
@@ -8,7 +7,6 @@ pub fn controller(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     current_state: Res<CurrentState<GameState>>,
-    mut rapier_config: ResMut<RapierConfiguration>,
 ) {
     match current_state.0 {
         GameState::MainMenu => {
