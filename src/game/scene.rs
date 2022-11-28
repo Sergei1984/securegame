@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::common::cuboid_from;
 use crate::common::get_world_coord_from_screen;
 use crate::common::MainCamera;
 
@@ -35,18 +36,11 @@ pub fn init_scene(
 
     let mut land_colliders: Vec<(Vec2, f32, Collider)> = vec![];
 
-    if level.land_line_screen_coords.len() > 1 {
-        let mut prev_point = level.land_line_screen_coords.iter().next().unwrap();
+    if level.land_lines.len() > 1 {
+        let mut prev_point = level.land_lines.iter().next().unwrap();
 
-        for point in level.land_line_screen_coords.iter().skip(1) {
-            let collider = cuboid_from_screen_coords(
-                *prev_point,
-                *point,
-                win.width(),
-                win.height(),
-                camera,
-                camera_transform,
-            );
+        for point in level.land_lines.iter().skip(1) {
+            let collider = cuboid_from(prev_point, point, 5.0);
 
             land_colliders.push(collider);
 
@@ -94,41 +88,3 @@ pub fn cleanup_scene(mut commands: Commands, bounds_query: Query<Entity, With<Bo
 
 #[derive(Component)]
 pub struct Bounds;
-
-fn cuboid_from_screen_coords(
-    start_screen: Vec2,
-    end_screen: Vec2,
-    window_width: f32,
-    window_height: f32,
-    camera: &Camera,
-    camera_transform: &GlobalTransform,
-) -> (Vec2, f32, Collider) {
-    let start = get_world_coord_from_screen(
-        start_screen,
-        window_width,
-        window_height,
-        camera,
-        camera_transform,
-    );
-    let end = get_world_coord_from_screen(
-        end_screen,
-        window_width,
-        window_height,
-        camera,
-        camera_transform,
-    );
-
-    let axis = start - end;
-    let width = axis.length() + 3.0;
-    let midpoint = Vec2::new((end.x + start.x) / 2.0, (end.y + start.y) / 2.0);
-    let angle = -axis.angle_between(Vec2::new(1.0, 0.0));
-
-    let collider = Collider::cuboid(width / 2.0, 5.0);
-    return (midpoint, angle, collider);
-
-    // let center = Vec2::new((start.x + end.x) / 2.0, (start.y + end.y) / 2.0);
-    // let width = ((start.x - end.x).abs()).max(5.0);
-    // let height = ((start.y - end.y).abs()).max(5.0);
-
-    // return (center, 0.0, Collider::cuboid(width / 2.0, height / 2.0));
-}

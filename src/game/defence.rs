@@ -3,9 +3,9 @@ use bevy::render::mesh::VertexAttributeValues;
 use bevy::sprite::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::common::{get_cursor_pos, MainCamera};
+use crate::common::{cuboid_from, get_cursor_pos, MainCamera};
 
-use super::GameParameters;
+use super::{level::Level, GameParameters};
 
 #[derive(Component, Default, Debug)]
 pub struct Defence {
@@ -58,14 +58,17 @@ pub fn cleanup_defence(mut commands: Commands, defence_query: Query<Entity, With
 pub fn draw_defence_core(
     mouse_button: Res<Input<MouseButton>>,
     mut cursor_moved_events: EventReader<CursorMoved>,
-    mut query: Query<&mut Defence>,
+    mut defence_query: Query<&mut Defence>,
     wnds: Res<Windows>,
-    q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    camera_query: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    level_query: Query<&Level>,
+    rapier: Res<RapierContext>,
 ) {
-    let mut def = query.single_mut();
+    let mut def = defence_query.single_mut();
+    let level = level_query.single();
 
     if cursor_moved_events.iter().last().is_some() {
-        let position = get_cursor_pos(&wnds, &q_camera);
+        let position = get_cursor_pos(&wnds, &camera_query);
 
         if mouse_button.just_pressed(MouseButton::Left) && !def.adding_new_end {
             def.points.push(position.clone());
@@ -81,6 +84,14 @@ pub fn draw_defence_core(
         }
 
         if def.adding_new_end {
+            let def_len = def.points.len();
+            if level.land_lines.len() > 1 && def_len > 1 {
+                let def_start = def.points[def_len - 2];
+                let def_end = position;
+
+                let (pos, angle, collider) = cuboid_from(&def_start, &def_end, 5.0);
+            }
+
             let last_index = def.points.len() - 1;
             def.points[last_index] = position.clone();
         }
@@ -103,16 +114,7 @@ pub fn create_defence_collider(
         let mut prev_point = def.points.iter().next().unwrap();
 
         for point in def.points.iter().skip(1) {
-            let v = Vec2::new(point.x - prev_point.x, point.y - prev_point.y);
-            let midpoint = Vec2::new(
-                (prev_point.x + point.x) / 2.0,
-                (prev_point.y + point.y) / 2.0,
-            );
-
-            let angle = -v.angle_between(Vec2::new(1.0, 0.0));
-            let width = v.length();
-            let collider = Collider::cuboid(width / 2.0, 5.0);
-            colliders.push((midpoint, angle, collider));
+            colliders.push(cuboid_from(point, prev_point, 5.0));
 
             prev_point = point;
         }

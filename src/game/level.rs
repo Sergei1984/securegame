@@ -23,7 +23,7 @@ pub fn start_level_loading(
         hive_handle: asset_server.load("hive.png"),
         target_position: [0.0, -200.0].into(),
         hive_position: [-200.0, 300.0].into(),
-        land_line_screen_coords: vec![],
+        land_lines: vec![],
     };
     info!("Start level loading");
 
@@ -112,7 +112,19 @@ pub fn wait_for_loading(
             camera_transform,
         );
 
-        level.land_line_screen_coords = control.land_line_screen_coords;
+        level.land_lines = control
+            .land_line_screen_coords
+            .iter()
+            .map(|coords| {
+                get_world_coord_from_screen(
+                    *coords,
+                    win.width(),
+                    win.height(),
+                    camera,
+                    camera_transform,
+                )
+            })
+            .collect();
 
         commands.insert_resource(NextState(GameState::DrawDefence))
     }
@@ -219,7 +231,9 @@ pub struct Level {
 
     pub hive_position: Vec2,
     pub target_position: Vec2,
-    pub land_line_screen_coords: Vec<Vec2>,
+
+    // Land lines in world coords
+    pub land_lines: Vec<Vec2>,
 }
 
 impl Level {

@@ -1,4 +1,5 @@
 use bevy::{prelude::*, render::camera::RenderTarget};
+use bevy_rapier2d::prelude::*;
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -56,4 +57,14 @@ pub fn get_cursor_pos(
     }
 
     return Vec2::new(0.0, 0.0);
+}
+
+pub fn cuboid_from(start: &Vec2, end: &Vec2, thikness: f32) -> (Vec2, f32, Collider) {
+    let axis = *start - *end;
+    let width = axis.length() + 3.0;
+    let midpoint = Vec2::new((end.x + start.x) / 2.0, (end.y + start.y) / 2.0);
+    let angle = -axis.angle_between(Vec2::new(1.0, 0.0));
+
+    let collider = Collider::cuboid(width / 2.0, thikness);
+    return (midpoint, angle, collider);
 }
