@@ -134,7 +134,9 @@ pub fn create_defence_collider(
         let mut prev_point = def.points.iter().next().unwrap();
 
         for point in def.points.iter().skip(1) {
-            colliders.push(cuboid_from(point, prev_point, 5.0));
+            if (*point - *prev_point).length() > 0.1 {
+                colliders.push(cuboid_from(point, prev_point, 5.0));
+            }
 
             prev_point = point;
         }
