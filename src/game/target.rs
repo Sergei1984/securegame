@@ -2,9 +2,9 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use iyes_loopless::state::NextState;
 
-use crate::game::GameState;
+use crate::{common::cuboid_from, game::GameState};
 
-use super::{swarm::Wasp, GameParameters};
+use super::{defence::Defence, swarm::Wasp, GameParameters};
 
 pub fn init_target(
     game_params: Res<GameParameters>,
@@ -63,12 +63,14 @@ pub fn detect_wasp_sting(
     mut commands: Commands,
     time: Res<Time>,
     rapier_context: Res<RapierContext>,
-    wasp_collider_query: Query<Entity, With<Wasp>>,
-    target_collider_query: Query<Entity, With<Target>>,
+    wasp_collider_query: Query<(Entity, &GlobalTransform), With<Wasp>>,
+    target_collider_query: Query<(Entity, &GlobalTransform), With<Target>>,
+    defence_query: Query<Entity, With<Defence>>,
     mut target_timer_query: Query<&mut Target>,
-    mut rapier: ResMut<RapierConfiguration>,
+    mut rapier_config: ResMut<RapierConfiguration>,
+    rapier: Res<RapierContext>,
 ) {
-    if rapier.physics_pipeline_active {
+    if rapier_config.physics_pipeline_active {
         let mut t = target_timer_query.single_mut();
         if t.win_timer.tick(time.delta()).finished() {
             info!("Target survived!");
@@ -76,11 +78,40 @@ pub fn detect_wasp_sting(
             return;
         }
 
-        for target_entity in target_collider_query.iter() {
-            for wasp in wasp_collider_query.iter() {
-                if rapier_context.contact_pair(target_entity, wasp).is_some() {
-                    info!("Target bitten by the wasp!");
-                    rapier.physics_pipeline_active = false;
+        let def = defence_query.single();
+        let def_index = def.index();
+
+        for (target, target_transform) in target_collider_query.iter() {
+            for (wasp, wasp_transform) in wasp_collider_query.iter() {
+                if rapier_context.contact_pair(target, wasp).is_some() {
+                    let distance = target_transform.translation() - wasp_transform.translation();
+
+                    info!(
+                        "Target bitten by the wasp! Target: {}. Wasp: {}. Distance: {}.",
+                        target_transform.translation(),
+                        wasp_transform.translation(),
+                        distance.length()
+                    );
+
+                    let (pos, angle, collider) = cuboid_from(
+                        &target_transform.translation().truncate(),
+                        &wasp_transform.translation().truncate(),
+                        1.0,
+                    );
+
+                    let predicate = |e: Entity| e.index() == def_index;
+
+                    let filter = QueryFilter::default().predicate(&predicate);
+
+                    if rapier
+                        .intersection_with_shape(pos, angle, &collider, filter)
+                        .is_some()
+                    {
+                        info!("False collision, there is collider between target and wasp");
+                        return;
+                    }
+
+                    rapier_config.physics_pipeline_active = false;
                 }
             }
         }
