@@ -61,6 +61,69 @@ pub fn draw_defence_core(
     mut defence_query: Query<&mut Defence>,
     wnds: Res<Windows>,
     camera_query: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    rapier: Res<RapierContext>,
+) {
+    if cursor_moved_events.iter().last().is_some() {
+        let mut def = defence_query.single_mut();
+        let len = def.points.len();
+
+        let position = get_cursor_pos(&wnds, &camera_query);
+
+        let start = if len == 0 {
+            position + 0.01
+        } else {
+            def.points[len - 2]
+        };
+
+        let (pos, angle, collider) = cuboid_from(&start, &position, 5.0);
+
+        if rapier
+            .intersection_with_shape(pos, angle, &collider, QueryFilter::default())
+            .is_some()
+        {
+            return;
+        }
+
+        if mouse_button.just_pressed(MouseButton::Left) {
+            if len == 0 {
+                def.points.push(position.clone());
+                def.points.push(position);
+            } else {
+                let distance = position - def.points[len - 2];
+                info!(
+                    "Button pressed. Next point is {} distance {}",
+                    &distance,
+                    &distance.length()
+                );
+
+                if distance.length() < 0.1 {
+                    return;
+                }
+
+                def.points.push(position);
+            }
+        } else {
+            // Nothing to do until defence is empty
+            if len == 0 {
+                return;
+            }
+
+            let distance = position - def.points[len - 2];
+            if distance.length() < 0.1 {
+                return;
+            }
+
+            def.points[len - 1] = position.clone();
+        }
+    }
+}
+
+pub fn draw_defence_core2(
+    mouse_button: Res<Input<MouseButton>>,
+    mut cursor_moved_events: EventReader<CursorMoved>,
+    mut defence_query: Query<&mut Defence>,
+    wnds: Res<Windows>,
+    camera_query: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
     level_query: Query<&Level>,
     rapier: Res<RapierContext>,
 ) {
@@ -203,10 +266,10 @@ pub fn create_final_defence_mesh(
 }
 
 pub fn update_drawing_defence_mesh(
-    defence_changed_query: Query<&Defence>,
+    defence_query: Query<&Defence>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    if let Ok(def) = defence_changed_query.get_single() {
+    if let Ok(def) = defence_query.get_single() {
         if let Some(mesh) = meshes.get_mut(&def.mesh_handle) {
             let z = 30.0;
             if def.points.len() > 1 {
