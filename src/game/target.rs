@@ -77,11 +77,11 @@ pub fn detect_wasp_sting(
 
         for target_entity in target_query.iter() {
             for wasp in wasp_query.iter() {
-                if rapier_context.contact_pair(target_entity, wasp).is_some() {
-                    info!("Target bitten by the wasp!");
-                    // commands.insert_resource(NextState(GameState::Lose));
-                    rapier.physics_pipeline_active = false;
-                    // target.was_bitten = true;
+                if let Some(contact_pair) = rapier_context.contact_pair(target_entity, wasp) {
+                    if contact_pair.has_any_active_contacts() {
+                        info!("Target bitten by the wasp!");
+                        rapier.physics_pipeline_active = false;
+                    }
                 }
             }
         }
