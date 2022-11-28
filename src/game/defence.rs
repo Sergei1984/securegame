@@ -5,7 +5,7 @@ use bevy_rapier2d::prelude::*;
 
 use crate::common::{cuboid_from, get_cursor_pos, MainCamera};
 
-use super::{level::Level, GameParameters};
+use super::GameParameters;
 
 #[derive(Component, Default, Debug)]
 pub struct Defence {
